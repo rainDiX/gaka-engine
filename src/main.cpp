@@ -1,11 +1,14 @@
+#include <SDL2/SDL_video.h>
+#include <cstdlib>
 #include <glad/gl.h>
 
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_opengl.h>
 
 #include <iostream>
 
-void framebuffer_size_callback(GLFWwindow *window, int width, int height);
-void processInput(GLFWwindow *window);
+// void framebuffer_size_callback(GLFWwindow *window, int width, int height);
+void processInput(bool* running);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -27,32 +30,60 @@ const char *fragmentShaderSource =
     "}\n\0";
 
 int main() {
-  // glfw: initialize and configure
-  // ------------------------------
-  glfwInit();
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-#ifdef __APPLE__
-  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-#endif
+  bool fullscreen = false;
+  bool vsync = false;
+
+  unsigned long flags = SDL_WINDOW_OPENGL;
+  if (fullscreen)
+    flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
+
+  // SDL: initialize and configure
+  // ------------------------------
+  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+    std::cerr << "failed to init SDL2: " << SDL_GetError() << std::endl;
+    return EXIT_FAILURE;
+  }
+
+  // Enable v-sync (set 1 to enable, 0 to disable)
+  SDL_GL_SetSwapInterval(vsync ? 1 : 0);
+
+  // Request at least 32-bit color
+  SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
+  SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
+
+  // Request a double-buffered, OpenGL 4.6 (or higher) core profile
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 6);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
   // glfw window creation
   // --------------------
-  GLFWwindow *window =
-      glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+  SDL_Window *window =
+      SDL_CreateWindow("SDL2 OpenGL Demo", SDL_WINDOWPOS_UNDEFINED,
+                       SDL_WINDOWPOS_UNDEFINED, 640, 640, flags);
+
   if (window == NULL) {
-    std::cout << "Failed to create GLFW window" << std::endl;
-    glfwTerminate();
-    return -1;
+    std::cerr << "Failed to create SDL2 window" << std::endl;
+    SDL_Quit();
+    return EXIT_FAILURE;
   }
-  glfwMakeContextCurrent(window);
-  glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+  // SDL_GLContext is an alias for "void*"
+  SDL_GLContext context = SDL_GL_CreateContext(window);
+  if (context == NULL) {
+    SDL_DestroyWindow(window);
+    SDL_Quit();
+
+    fprintf(stderr, "failed to create OpenGL context: %s\n", SDL_GetError());
+    return EXIT_FAILURE;
+  }
 
   // glad: load all OpenGL function pointers
   // ---------------------------------------
-  int version = gladLoadGL(glfwGetProcAddress);
+  int version = gladLoadGL((GLADloadfunc) SDL_GL_GetProcAddress);
   if (version == 0) {
     std::cout << "Failed to initialize OpenGL context" << std::endl;
     return -1;
@@ -137,12 +168,14 @@ int main() {
   // uncomment this call to draw in wireframe polygons.
   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+  bool running = true;
+
   // render loop
   // -----------
-  while (!glfwWindowShouldClose(window)) {
+  while (running) {
     // input
     // -----
-    processInput(window);
+    processInput(&running);
 
     // render
     // ------
@@ -160,8 +193,7 @@ int main() {
     // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
     // etc.)
     // -------------------------------------------------------------------------------
-    glfwSwapBuffers(window);
-    glfwPollEvents();
+    SDL_GL_SwapWindow(window);
   }
 
   // optional: de-allocate all resources once they've outlived their purpose:
@@ -170,25 +202,35 @@ int main() {
   glDeleteBuffers(1, &VBO);
   glDeleteProgram(shaderProgram);
 
-  // glfw: terminate, clearing all previously allocated GLFW resources.
-  // ------------------------------------------------------------------
-  glfwTerminate();
+  // Cleanup SDL2 resources
+  SDL_GL_DeleteContext(context);
+  SDL_DestroyWindow(window);
+  SDL_Quit();
+
   return 0;
 }
 
 // process all input: query GLFW whether relevant keys are pressed/released this
 // frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------
-void processInput(GLFWwindow *window) {
-  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-    glfwSetWindowShouldClose(window, true);
+void processInput(bool *running) {
+  SDL_Event event = {0};
+  while (SDL_PollEvent(&event)) {
+    if (event.type == SDL_QUIT)
+      *running = false;
+    if (event.type == SDL_KEYUP) {
+      SDL_Keycode key = event.key.keysym.sym;
+      if (key == SDLK_q || key == SDLK_ESCAPE)
+        *running = false;
+    }
+  }
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback
 // function executes
 // ---------------------------------------------------------------------------------------------
-void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
-  // make sure the viewport matches the new window dimensions; note that width
-  // and height will be significantly larger than specified on retina displays.
-  glViewport(0, 0, width, height);
-}
+// void framebuffer_size_callback(GLFWwindow *window, int width, int height) {
+//   // make sure the viewport matches the new window dimensions; note that width
+//   // and height will be significantly larger than specified on retina displays.
+//   glViewport(0, 0, width, height);
+// }
