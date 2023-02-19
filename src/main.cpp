@@ -1,3 +1,8 @@
+/**
+ * SPDX-License-Identifier: MIT
+ */
+
+
 #include <SDL2/SDL_video.h>
 #include <cstdlib>
 #include <glad/gl.h>
