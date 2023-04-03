@@ -74,16 +74,6 @@ const std::shared_ptr<ShaderProgram> Renderer::getProgram(const std::string& nam
     }
 }
 
-std::optional<std::unique_ptr<RenderObject>> Renderer::createObject(const Mesh& mesh, const std::string& programName,
-                                                                    const std::vector<Texture>& textures,
-                                                                    const std::shared_ptr<Material> material) const {
-    auto program = getProgram(programName);
-    if (program != nullptr) {
-        return {std::make_unique<RenderObject>(mesh, program, textures, material)};
-    }
-    return std::nullopt;
-}
-
 void Renderer::setViewport(int x, int y, int width, int height) {
     m_aspectRatio = float(width) / float(height);
     glViewport(x, y, width, height);

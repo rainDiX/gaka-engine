@@ -3,15 +3,15 @@
  */
 
 // GL
-#include <SDL2/SDL_mouse.h>
-#include <SDL2/SDL_stdinc.h>
 #include <glad/gl.h>
 
 // SDL2
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_mouse.h>
 #include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
 
 #include <cstdlib>
@@ -98,59 +98,63 @@ int main() {
         return EXIT_FAILURE;
     }
 
-    WindowState state = {window, SCR_WIDTH, SCR_HEIGHT, false, 0, 0};
+    {
+        WindowState state = {window, SCR_WIDTH, SCR_HEIGHT, false, 0, 0};
 
-    auto assetManager = std::make_shared<AssetManager>("./assets");
-    auto renderer = Renderer(SDL_GL_GetProcAddress, assetManager);
+        auto assetManager = std::make_shared<AssetManager>("./assets");
+        auto renderer = Renderer(SDL_GL_GetProcAddress, assetManager);
 
-    renderer.resize(SCR_WIDTH, SCR_HEIGHT);
+        renderer.resize(SCR_WIDTH, SCR_HEIGHT);
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-    auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
-    for (int i = 0; i < 4; ++i) {
-        for (int j = 0; j < 4; ++j) {
-            ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
+        auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
+            }
         }
-    }
 
-    auto surface = BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
+        auto surface = BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
 
-    auto copper = std::make_shared<Material>();
-    copper->name = std::string("copper");
-    copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
-    copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
-    copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
-    copper->shininess = 0.1;
+        auto copper = std::make_shared<Material>();
+        copper->name = std::string("copper");
+        copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
+        copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
+        copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
+        copper->shininess = 0.1;
 
-    bool running = true;
-    bool mouseCaptured = false;
+        bool running = true;
+        bool mouseCaptured = false;
 
-    auto mesh_object = renderer.createObject(surface.mesh(), "normal", std::vector<Texture>(), copper);
+        auto normal = renderer.getProgram("normal");
+        auto phong = renderer.getProgram("phong");
 
-    auto& scene = renderer.getScene();
+        auto mesh_object = std::make_unique<RenderObject>(surface.mesh(), normal, std::vector<Texture>(), copper);
 
-    if (mesh_object) {
-        scene.addObject("AA", std::move(*mesh_object));
-    }
 
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 10.0));
+        auto& scene = renderer.getScene();
 
-    // render loop
-    // -----------
-    while (running) {
-        // input
-        // -----
+        scene.addObject("AA", std::move(mesh_object));
 
-        processInput(state, running, renderer);
+        scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
+        scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
+        scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 10.0));
 
-        renderer.renderScene();
+        // render loop
+        // -----------
+        while (running) {
+            // input
+            // -----
 
-        SDL_GL_SwapWindow(window);
+            processInput(state, running, renderer);
+
+            renderer.renderScene();
+
+            SDL_GL_SwapWindow(window);
+        }
     }
 
     // Cleanup SDL2 resources
