@@ -1,6 +1,6 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.1)
 
-project(gaka)
+project(gaka C CXX)
 
 set(OpenGL_GL_PREFERENCE GLVND)
 
@@ -12,9 +12,16 @@ find_package(OpenGL REQUIRED)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# Path to glad directory
+set(GLAD_SOURCES_DIR "${PROJECT_SOURCE_DIR}/external/glad/")
+# Path to glad cmake files
+add_subdirectory("${GLAD_SOURCES_DIR}/cmake" glad_cmake)
+# Specify glad settings
+glad_add_library(glad_gl_core_46 REPRODUCIBLE API gl:core=4.6)
+
+
 add_executable(gaka 
     src/main.cpp
-    src/gl.c
     src/AssetManager.cpp
     src/Rendering/Renderer.cpp
     src/Rendering/RenderObject.cpp
@@ -23,11 +30,7 @@ add_executable(gaka
     src/Rendering/Scene.cpp
     src/Geometry/Curves.cpp
     )
-
-target_include_directories(gaka PUBLIC
-                           $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/include>
-                           $<INSTALL_INTERFACE:include>)
                            
-target_link_libraries(gaka PUBLIC SDL2 OpenGL::GL ${CMAKE_DL_LIBS})
+target_link_libraries(gaka PUBLIC glad_gl_core_46 SDL2 ${CMAKE_DL_LIBS})
 
 install(TARGETS gaka RUNTIME DESTINATION bin)

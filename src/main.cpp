@@ -101,9 +101,9 @@ int main() {
     WindowState state = {window, SCR_WIDTH, SCR_HEIGHT, false, 0, 0};
 
     auto assetManager = std::make_shared<AssetManager>("./assets");
-    auto renderer = new Renderer(SDL_GL_GetProcAddress, assetManager);
+    auto renderer = Renderer(SDL_GL_GetProcAddress, assetManager);
 
-    renderer->resize(SCR_WIDTH, SCR_HEIGHT);
+    renderer.resize(SCR_WIDTH, SCR_HEIGHT);
 
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -128,14 +128,13 @@ int main() {
     bool running = true;
     bool mouseCaptured = false;
 
-    auto normal = renderer->getProgram("normal");
-    auto phong = renderer->getProgram("phong");
+    auto mesh_object = renderer.createObject(surface.mesh(), "normal", std::vector<Texture>(), copper);
 
-    auto mesh_object = std::make_unique<RenderObject>(surface.mesh(), normal, std::vector<Texture>(), copper);
+    auto& scene = renderer.getScene();
 
-    auto& scene = renderer->getScene();
-
-    scene.addObject("AA", std::move(mesh_object));
+    if (mesh_object) {
+        scene.addObject("AA", std::move(*mesh_object));
+    }
 
     scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
     scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
@@ -147,15 +146,15 @@ int main() {
         // input
         // -----
 
-        processInput(state, running, *renderer);
+        processInput(state, running, renderer);
 
-        renderer->renderScene();
+        renderer.renderScene();
 
         SDL_GL_SwapWindow(window);
     }
 
     // Cleanup SDL2 resources
-    delete renderer;
+    // delete renderer;
     SDL_GL_DeleteContext(context);
     SDL_DestroyWindow(window);
     SDL_Quit();
@@ -257,12 +256,11 @@ int getMaxMultisampleSamples() {
     while (!maxFound) {
         SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, maxSamples * 2);
         SDL_Window* window = SDL_CreateWindow("HIDDEN", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 1000,
-                                          SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
+                                              SDL_WINDOW_OPENGL | SDL_WINDOW_HIDDEN);
         maxFound = window == NULL;
         if (!maxFound) {
             SDL_DestroyWindow(window);
             maxSamples *= 2;
-            std::cout << maxSamples<< std::endl;
         }
     }
     return maxSamples;

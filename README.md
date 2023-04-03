@@ -4,6 +4,26 @@ An OpenGL 4.3+ Renderer written in Modern C++
 
 ![Gaka rendering a Bezier surface in a SDL2 Window](/.readme/bezier_surface.png?raw=true "Gaka rendering a Bezier surface")
 
+## Build instructions
+Build dependencies :
+- Python3 and jinja2 module (for glad)
+- CMake
+- a C++17 compiler
+
+Dependencies :
+- OpenGL 4.6
+- glm
+- SDL2
+
+```sh
+git clone --recurse-submodules git://gitlab.com/rainDX/gaka-cpp.git
+cd gaka-cpp
+mkdir build
+cmake -DCMAKE_BUILD_TYPE=Release -G Ninja -B build
+cmake --build build/
+# lauch it
+build/gaka
+```
 
 ## TODO:
 - [ ] Bezier curves
