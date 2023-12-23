@@ -9,12 +9,8 @@
 #include <glm/gtx/normal.hpp>
 #include <vector>
 
-#include "Common.hpp"
-
-// For develeppement purpose
-#include <iostream>
-
-#include "Surface.hpp"
+#include "Geometry/algorithm.hpp"
+#include "Geometry/Surface.hpp"
 
 
 template <size_t M, size_t N>

@@ -15,8 +15,6 @@ AssetManager::AssetManager(const char* root_dir_path) {
     m_rootDir = std::filesystem::path(std::move(root_dir));
 }
 
-#include <iostream>
-
 std::unique_ptr<std::string> AssetManager::readString(
     const std::string& assetPath) const {
     auto asset_path = m_rootDir / assetPath;

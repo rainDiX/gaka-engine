@@ -6,11 +6,10 @@
 
 #include <glm/ext/vector_float3.hpp>
 #include <glm/fwd.hpp>
-#include <memory>
 #include <stdexcept>
 #include <vector>
 
-#include "Geometry/Common.hpp"
+#include "Geometry/algorithm.hpp"
 
 void SimpleCurve::registerPoint(glm::vec2 point) {
     m_points.push_back(glm::vec3(point, 0.0));

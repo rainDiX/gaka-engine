@@ -10,10 +10,8 @@
 #include <stdexcept>
 #include <vector>
 
-#include "Common.hpp"
-
-// For develeppement purpose
-#include "Curves.hpp"
+#include "Geometry/algorithm.hpp"
+#include "Geometry/Curves.hpp"
 
 template <size_t N>
 Bezier<N>::Bezier(const glm::vec3& begin, const glm::vec3& end,
@@ -59,11 +57,11 @@ const std::vector<glm::vec3>& Bezier<N>::ctrlPoints() {
 }
 
 template <size_t N>
-glm::vec3& Bezier<N>::operator[](int index) { 
+glm::vec3& Bezier<N>::operator[](int index) {
     if (index < 0 || index >= N) {
         throw std::out_of_range("Index out of range");
     }
-    return m_ctrlPoints[index]; 
+    return m_ctrlPoints[index];
 }
 
 template <size_t N>
