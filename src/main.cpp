@@ -20,11 +20,15 @@
 #include <random>
 #include <vector>
 
-#include "AssetManager.hpp"
+#include "IO/AssetManager.hpp"
+#include "Geometry/Curves.hpp"
+#include "Geometry/Mesh.hpp"
 #include "Geometry/Surface.hpp"
 #include "Rendering/Material.hpp"
 #include "Rendering/RenderObject.hpp"
 #include "Rendering/Renderer.hpp"
+#include "Rendering/Scene.hpp"
+#include "Rendering/ShaderProgram.hpp"
 
 struct WindowState {
     SDL_Window* window;
@@ -43,6 +47,75 @@ int getMaxMultisampleSamples();
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+
+void bezierDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    auto bezier = Bezier<4>(glm::vec3(0, 0, 0), glm::vec3(3, 0, 0), 100);
+
+    for (int i = 1; i < 3; ++i) {
+        bezier[i] = glm::vec3(i, 2 * dis(gen), 2 * dis(gen));
+    }
+
+    auto curveMesh = geometry::Mesh{std::vector<geometry::Vertex>(), bezier.indices()};
+
+    for (int i = 0; i < bezier.curve().size(); ++i) {
+        float u = float(i) / float(bezier.curve().size());
+        curveMesh.vertices.push_back(geometry::Vertex{bezier.curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(u, u)});
+    }
+
+    auto copper = std::make_shared<Material>();
+    copper->name = std::string("copper");
+    copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
+    copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
+    copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
+    copper->shininess = 0.1;
+
+    auto ctrlCurve = bezier.ctrlCurve();
+    auto ctrlMesh = geometry::Mesh{std::vector<geometry::Vertex>(), ctrlCurve->indices()};
+    for (int i = 0; i < ctrlCurve->curve().size(); ++i) {
+        float u = float(i) / float(bezier.curve().size());
+        ctrlMesh.vertices.push_back(
+            geometry::Vertex{ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
+    }
+
+    auto curveObj = std::make_unique<RenderObject>(curveMesh, program, std::vector<Texture>(), copper);
+    auto ctrlObj = std::make_unique<RenderObject>(ctrlMesh, program, std::vector<Texture>(), copper);
+
+    curveObj->setDrawingMode(LINES);
+    ctrlObj->setDrawingMode(LINES);
+
+    scene.addObject("control curve", std::move(ctrlObj));
+    scene.addObject("bezier Curve", std::move(curveObj));
+}
+
+void surfaceDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
+        }
+    }
+
+    auto surface = geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
+
+    auto copper = std::make_shared<Material>();
+    copper->name = std::string("copper");
+    copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
+    copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
+    copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
+    copper->shininess = 0.1;
+
+    auto surfaceObj = std::make_unique<RenderObject>(surface.mesh(), program, std::vector<Texture>(), copper);
+
+    scene.addObject("surface", std::move(surfaceObj));
+}
 
 int main() {
     bool fullscreen = false;
@@ -106,38 +179,18 @@ int main() {
 
         renderer.resize(SCR_WIDTH, SCR_HEIGHT);
 
-        std::random_device rd;
-        std::mt19937 gen(rd());
-        std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
-        auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
-            }
-        }
-
-        auto surface = BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
-
-        auto copper = std::make_shared<Material>();
-        copper->name = std::string("copper");
-        copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
-        copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
-        copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
-        copper->shininess = 0.1;
-
         bool running = true;
         bool mouseCaptured = false;
 
+        auto line = renderer.getProgram("line");
         auto normal = renderer.getProgram("normal");
+        auto lambertian = renderer.getProgram("lambertian");
         auto phong = renderer.getProgram("phong");
-
-        auto mesh_object = std::make_unique<RenderObject>(surface.mesh(), normal, std::vector<Texture>(), copper);
-
 
         auto& scene = renderer.getScene();
 
-        scene.addObject("AA", std::move(mesh_object));
+        // bezierDemo(line, scene);
+        surfaceDemo(lambertian, scene);
 
         scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
         scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));

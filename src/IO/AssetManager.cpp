@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "AssetManager.hpp"
+#include "IO/AssetManager.hpp"
 
 #include <filesystem>
 #include <fstream>

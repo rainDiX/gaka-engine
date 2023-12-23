@@ -10,8 +10,8 @@
 #include <string>
 #include <vector>
 
-#include "../AssetManager.hpp"
-#include "Common.hpp"
+#include "IO/AssetManager.hpp"
+#include "Rendering/Common.hpp"
 
 enum ShaderType {
     Vertex = GL_VERTEX_SHADER,
@@ -27,6 +27,7 @@ class ShaderProgram {
     ShaderProgram();
     ~ShaderProgram();
     ShaderProgram(const ShaderProgram&) = delete;
+    ShaderProgram& operator=(const ShaderProgram&) = delete;
     GLint id() const;
     bool isLinked() const;
     void use() const;

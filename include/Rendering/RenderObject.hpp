@@ -32,17 +32,18 @@ enum DrawingMode {
 
 class RenderObject {
    public:
-    RenderObject(const Mesh& mesh, const std::shared_ptr<ShaderProgram> program,
+    RenderObject(const geometry::Mesh& mesh, const std::shared_ptr<ShaderProgram> program,
                  const std::vector<Texture>& textures,
                  const std::shared_ptr<Material> material);
     RenderObject(const RenderObject&) = delete;
+    RenderObject& operator=(const RenderObject&) = delete;
     ~RenderObject();
     void bind() const;
     void draw(
         const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix,
         const glm::mat4& modelMatrix,
         const std::vector<std::pair<PointLight, glm::vec3>>& lights) const;
-    void update(const Mesh& mesh);
+    void update(const geometry::Mesh& mesh);
     void setDrawingMode(const DrawingMode mode);
     DrawingMode drawingMode() const;
 

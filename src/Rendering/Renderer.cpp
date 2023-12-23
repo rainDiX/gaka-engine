@@ -1,4 +1,4 @@
-#include "Renderer.hpp"
+#include "Rendering/Renderer.hpp"
 
 #include <iostream>
 #include <memory>
@@ -6,10 +6,10 @@
 #include <string>
 #include <vector>
 
-#include "FlyingCamera.hpp"
-#include "RenderObject.hpp"
-#include "Scene.hpp"
-#include "ShaderProgram.hpp"
+#include "Rendering/FlyingCamera.hpp"
+#include "Rendering/RenderObject.hpp"
+#include "Rendering/Scene.hpp"
+#include "Rendering/ShaderProgram.hpp"
 
 Renderer::Renderer(void* (*loadfunc)(const char*), std::shared_ptr<AssetManager> assetManager)
     : m_asset_manager(assetManager) {
@@ -32,17 +32,35 @@ Renderer::Renderer(void* (*loadfunc)(const char*), std::shared_ptr<AssetManager>
 
 // temporary
 void Renderer::compileShaders() {
+    auto line = std::make_shared<ShaderProgram>();
+    line->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
+    line->compileFile("shaders/line.frag", *m_asset_manager, ShaderType::Fragment);
+    line->link();
+
     auto normal = std::make_shared<ShaderProgram>();
     normal->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
     normal->compileFile("shaders/normals.frag", *m_asset_manager, ShaderType::Fragment);
     normal->link();
+
+    auto parametric = std::make_shared<ShaderProgram>();
+    parametric->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
+    parametric->compileFile("shaders/parametric.frag", *m_asset_manager, ShaderType::Fragment);
+    parametric->link();
+
+    auto lambertian = std::make_shared<ShaderProgram>();
+    lambertian->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
+    lambertian->compileFile("shaders/lambertian.frag", *m_asset_manager, ShaderType::Fragment);
+    lambertian->link();
+
     auto phong = std::make_shared<ShaderProgram>();
     phong->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
     phong->compileFile("shaders/phong.frag", *m_asset_manager, ShaderType::Fragment);
     phong->link();
 
+    m_programs.insert(std::make_pair("line", line));
     m_programs.insert(std::make_pair("normal", normal));
-    m_programs.insert(std::make_pair("phong", phong));
+    m_programs.insert(std::make_pair("lambertian", lambertian));
+    m_programs.insert(std::make_pair("phong", lambertian));
 }
 
 void Renderer::renderScene() const {

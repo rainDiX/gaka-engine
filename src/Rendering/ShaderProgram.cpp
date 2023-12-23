@@ -2,7 +2,7 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "ShaderProgram.hpp"
+#include "Rendering/ShaderProgram.hpp"
 
 #include <iostream>
 #include <vector>

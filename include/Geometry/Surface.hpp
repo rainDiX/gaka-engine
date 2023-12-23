@@ -9,6 +9,8 @@
 
 #include "Mesh.hpp"
 
+namespace geometry {
+
 class Surface {
    public:
     virtual const Mesh& mesh() const = 0;
@@ -30,5 +32,7 @@ class BezierSurface : public Surface {
     Mesh m_mesh;
     size_t m_meshEdges;
 };
+
+}  // namespace geometry
 
 #include "BezierSurface_impl.hpp"

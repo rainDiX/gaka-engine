@@ -26,6 +26,7 @@ class SimpleCurve : Curve {
     void registerPoints(std::vector<glm::vec3> points);
     const std::vector<unsigned>& indices() override;
     const std::vector<glm::vec3>& curve() override;
+    glm::vec3& operator[](int index);
 
    private:
     void updateIndices();
@@ -47,6 +48,8 @@ class Bezier : Curve {
     unsigned int nbSegments();
     void setNbSegments(unsigned int nbSegments);
 
+    glm::vec3& operator[](int index);
+
    private:
     void evaluate();
     void updateIndices();
@@ -57,3 +60,5 @@ class Bezier : Curve {
 };
 
 // TODO: PieceWiseBezier
+
+#include "Bezier_impl.hpp"
