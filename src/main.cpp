@@ -3,7 +3,7 @@
  */
 
 // GL
-#include <glad/gl.h>
+#include <GL/glew.h>
 
 // SDL2
 #include <SDL2/SDL.h>
@@ -14,6 +14,7 @@
 #include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_video.h>
 
+#include <cstddef>
 #include <cstdlib>
 #include <iostream>
 #include <memory>
@@ -61,7 +62,7 @@ void bezierDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
 
     auto curveMesh = geometry::Mesh{std::vector<geometry::Vertex>(), bezier.indices()};
 
-    for (int i = 0; i < bezier.curve().size(); ++i) {
+    for (size_t i = 0; i < bezier.curve().size(); ++i) {
         float u = float(i) / float(bezier.curve().size());
         curveMesh.vertices.push_back(geometry::Vertex{bezier.curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(u, u)});
     }
@@ -75,7 +76,7 @@ void bezierDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
 
     auto ctrlCurve = bezier.ctrlCurve();
     auto ctrlMesh = geometry::Mesh{std::vector<geometry::Vertex>(), ctrlCurve->indices()};
-    for (int i = 0; i < ctrlCurve->curve().size(); ++i) {
+    for (size_t i = 0; i < ctrlCurve->curve().size(); ++i) {
         float u = float(i) / float(bezier.curve().size());
         ctrlMesh.vertices.push_back(
             geometry::Vertex{ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
@@ -175,12 +176,11 @@ int main() {
         WindowState state = {window, SCR_WIDTH, SCR_HEIGHT, false, 0, 0};
 
         auto assetManager = std::make_shared<AssetManager>("./assets");
-        auto renderer = Renderer(SDL_GL_GetProcAddress, assetManager);
+        auto renderer = Renderer(assetManager);
 
         renderer.resize(SCR_WIDTH, SCR_HEIGHT);
 
         bool running = true;
-        bool mouseCaptured = false;
 
         auto line = renderer.getProgram("line");
         auto normal = renderer.getProgram("normal");

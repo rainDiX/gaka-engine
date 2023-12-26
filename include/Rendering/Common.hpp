@@ -6,7 +6,7 @@
 
 #include <string>
 #include <tuple>
-#include <glad/gl.h>
+#include <GL/glew.h>
 
 struct VertexAttribute {
     std::string name;

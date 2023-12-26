@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtx/normal.hpp>
@@ -34,15 +35,15 @@ void geometry::BezierSurface<M, N>::setMeshEdges(size_t edges) {
 template <size_t M, size_t N>
 void geometry::BezierSurface<M, N>::evaluate() {
     std::vector<glm::vec3> q_points(M * m_meshEdges, glm::vec3(0.0, 0.0, 0.0));
-    for (int i = 0; i < M; ++i) {
-        for (int j = 0; j < m_meshEdges; ++j) {
+    for (size_t i = 0; i < M; ++i) {
+        for (size_t j = 0; j < m_meshEdges; ++j) {
             float v = float(j) / float(m_meshEdges - 1);
             q_points[j * M + i] = deCasteljau(v, m_ctrlGrid.cbegin() + i * N, m_ctrlGrid.cbegin() + i * N + N);
         }
     }
 
-    for (int i = 0; i < q_points.size() / M; ++i) {
-        for (int j = 0; j < m_meshEdges; ++j) {
+    for (size_t i = 0; i < q_points.size() / M; ++i) {
+        for (size_t j = 0; j < m_meshEdges; ++j) {
             float u = float(j) / float(m_meshEdges - 1);
 
             Vertex vertex;
@@ -79,8 +80,8 @@ void geometry::BezierSurface<M, N>::calculateIndices() {
 
 template <size_t M, size_t N>
 void geometry::BezierSurface<M, N>::calculateNormals() {
-    for (int i = 0; i < m_meshEdges - 1; i++) {
-        for (int j = 0; j < m_meshEdges - 1; j++) {
+    for (size_t i = 0; i < m_meshEdges - 1; i++) {
+        for (size_t j = 0; j < m_meshEdges - 1; j++) {
             auto p0 = &m_mesh.vertices[i * m_meshEdges + j].position;
             auto p1 = &m_mesh.vertices[i * m_meshEdges + j + 1].position;
             auto p2 = &m_mesh.vertices[i * m_meshEdges + j + m_meshEdges].position;

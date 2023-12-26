@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <glad/gl.h>
+#include <GL/glew.h>
 
 #include <memory>
 #include <vector>
@@ -16,7 +16,7 @@
 
 class Renderer {
    public:
-    Renderer(void* (*loadfunc)(const char*), std::shared_ptr<AssetManager> assetManager);
+    Renderer(std::shared_ptr<AssetManager> assetManager);
     void resize(int width, int height);
     void setViewport(int x, int y, int width, int height);
     const Scene& getScene() const;

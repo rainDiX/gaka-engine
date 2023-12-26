@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <glm/glm.hpp>
 #include <glm/gtx/normal.hpp>
 #include <iterator>
@@ -16,7 +17,7 @@
 template <size_t N>
 Bezier<N>::Bezier(const glm::vec3& begin, const glm::vec3& end,
                   unsigned int nbSegments) {
-    for (int i = 0; i < N; ++i) {
+    for (size_t i = 0; i < N; ++i) {
         float d = float(i) / float(N - 1);
         m_ctrlPoints[i] = begin * (1.0f - d) + end * d;
     }
@@ -80,7 +81,7 @@ template <size_t N>
 void Bezier<N>::updateIndices() {
     m_indices = std::vector<unsigned int>();
     m_indices.reserve(m_curvePoints.size() * 2);
-    for (int i = 0; i < m_curvePoints.size() - 1; ++i) {
+    for (size_t i = 0; i < m_curvePoints.size() - 1; ++i) {
         m_indices.push_back(i);
         m_indices.push_back(i+1);
     }

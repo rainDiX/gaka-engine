@@ -1,4 +1,4 @@
-#include <glad/gl.h>
+#include <GL/glew.h>
 #include <string>
 
 enum TextureType {

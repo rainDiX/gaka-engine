@@ -3,6 +3,7 @@
 #include <iostream>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -11,15 +12,14 @@
 #include "Rendering/Scene.hpp"
 #include "Rendering/ShaderProgram.hpp"
 
-Renderer::Renderer(void* (*loadfunc)(const char*), std::shared_ptr<AssetManager> assetManager)
-    : m_asset_manager(assetManager) {
-    int version = gladLoadGL((GLADloadfunc)loadfunc);
-    if (version == 0) {
-        std::cerr << "Failed to initialize OpenGL context" << std::endl;
-        throw -1;
+Renderer::Renderer(std::shared_ptr<AssetManager> assetManager) : m_asset_manager(assetManager) {
+    auto err = glewInit();
+    if (err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY) {
+        std::cout << glewGetErrorString(err) << std::endl;
+        throw std::runtime_error("Failed to initialize OpenGL context");
     }
 
-    std::cerr << "Loaded OpenGL " << GLAD_VERSION_MAJOR(version) << "." << GLAD_VERSION_MINOR(version) << std::endl;
+    std::cerr << "Loaded OpenGL " << glGetString(GL_VERSION) << std::endl;
 
     glEnable(GL_MULTISAMPLE);
     glEnable(GL_LINE_SMOOTH);
