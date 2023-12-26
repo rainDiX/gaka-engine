@@ -8,6 +8,7 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+namespace gk::geometry {
 template <typename Iterator>
 inline glm::vec3 deCasteljau(float u, Iterator begin, Iterator end) {
     auto beta = std::vector<glm::vec3>(begin, end);
@@ -20,3 +21,4 @@ inline glm::vec3 deCasteljau(float u, Iterator begin, Iterator end) {
     }
     return beta[0];
 }
+}  // namespace gk::geometry

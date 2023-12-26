@@ -54,17 +54,17 @@ void bezierDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
 
-    auto bezier = Bezier<4>(glm::vec3(0, 0, 0), glm::vec3(3, 0, 0), 100);
+    auto bezier = gk::geometry::Bezier<4>(glm::vec3(0, 0, 0), glm::vec3(3, 0, 0), 100);
 
     for (int i = 1; i < 3; ++i) {
         bezier[i] = glm::vec3(i, 2 * dis(gen), 2 * dis(gen));
     }
 
-    auto curveMesh = geometry::Mesh{std::vector<geometry::Vertex>(), bezier.indices()};
+    auto curveMesh = gk::geometry::Mesh{std::vector<gk::geometry::Vertex>(), bezier.indices()};
 
     for (size_t i = 0; i < bezier.curve().size(); ++i) {
         float u = float(i) / float(bezier.curve().size());
-        curveMesh.vertices.push_back(geometry::Vertex{bezier.curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(u, u)});
+        curveMesh.vertices.push_back(gk::geometry::Vertex{bezier.curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(u, u)});
     }
 
     auto copper = std::make_shared<Material>();
@@ -75,11 +75,11 @@ void bezierDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
     copper->shininess = 0.1;
 
     auto ctrlCurve = bezier.ctrlCurve();
-    auto ctrlMesh = geometry::Mesh{std::vector<geometry::Vertex>(), ctrlCurve->indices()};
+    auto ctrlMesh = gk::geometry::Mesh{std::vector<gk::geometry::Vertex>(), ctrlCurve->indices()};
     for (size_t i = 0; i < ctrlCurve->curve().size(); ++i) {
         float u = float(i) / float(bezier.curve().size());
         ctrlMesh.vertices.push_back(
-            geometry::Vertex{ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
+            gk::geometry::Vertex{ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
     }
 
     auto curveObj = std::make_unique<RenderObject>(curveMesh, program, std::vector<Texture>(), copper);
@@ -104,7 +104,7 @@ void surfaceDemo(std::shared_ptr<ShaderProgram> program, Scene& scene) {
         }
     }
 
-    auto surface = geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
+    auto surface = gk::geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
 
     auto copper = std::make_shared<Material>();
     copper->name = std::string("copper");

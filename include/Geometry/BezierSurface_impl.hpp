@@ -15,25 +15,25 @@
 
 
 template <size_t M, size_t N>
-geometry::BezierSurface<M, N>::BezierSurface(const std::array<glm::vec3, M * N>&& ctrlGrid, size_t edges)
+gk::geometry::BezierSurface<M, N>::BezierSurface(const std::array<glm::vec3, M * N>&& ctrlGrid, size_t edges)
     : m_ctrlGrid(ctrlGrid), m_meshEdges(edges) {
     m_mesh = {std::vector<Vertex>(), std::vector<unsigned int>()};
     evaluate();
 }
 
 template <size_t M, size_t N>
-const geometry::Mesh& geometry::BezierSurface<M, N>::mesh() const {
+const gk::geometry::Mesh& gk::geometry::BezierSurface<M, N>::mesh() const {
     return m_mesh;
 }
 
 template <size_t M, size_t N>
-void geometry::BezierSurface<M, N>::setMeshEdges(size_t edges) {
+void gk::geometry::BezierSurface<M, N>::setMeshEdges(size_t edges) {
     m_meshEdges = edges;
     evaluate();
 }
 
 template <size_t M, size_t N>
-void geometry::BezierSurface<M, N>::evaluate() {
+void gk::geometry::BezierSurface<M, N>::evaluate() {
     std::vector<glm::vec3> q_points(M * m_meshEdges, glm::vec3(0.0, 0.0, 0.0));
     for (size_t i = 0; i < M; ++i) {
         for (size_t j = 0; j < m_meshEdges; ++j) {
@@ -61,7 +61,7 @@ void geometry::BezierSurface<M, N>::evaluate() {
 }
 
 template <size_t M, size_t N>
-void geometry::BezierSurface<M, N>::calculateIndices() {
+void gk::geometry::BezierSurface<M, N>::calculateIndices() {
     m_mesh.indices.reserve(m_meshEdges * m_meshEdges * 6);
 
     for (unsigned int i = 0; i < m_meshEdges - 1; ++i) {
@@ -79,7 +79,7 @@ void geometry::BezierSurface<M, N>::calculateIndices() {
 }
 
 template <size_t M, size_t N>
-void geometry::BezierSurface<M, N>::calculateNormals() {
+void gk::geometry::BezierSurface<M, N>::calculateNormals() {
     for (size_t i = 0; i < m_meshEdges - 1; i++) {
         for (size_t j = 0; j < m_meshEdges - 1; j++) {
             auto p0 = &m_mesh.vertices[i * m_meshEdges + j].position;

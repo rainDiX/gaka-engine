@@ -9,7 +9,7 @@
 
 #include "Mesh.hpp"
 
-namespace geometry {
+namespace gk::geometry {
 
 class Surface {
    public:
@@ -33,6 +33,6 @@ class BezierSurface : public Surface {
     size_t m_meshEdges;
 };
 
-}  // namespace geometry
+}  // namespace gk::geometry
 
 #include "BezierSurface_impl.hpp"

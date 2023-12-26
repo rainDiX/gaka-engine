@@ -11,6 +11,8 @@
 #include <memory>
 #include <vector>
 
+namespace gk::geometry {
+
 class Curve {
    public:
     virtual ~Curve() {}
@@ -60,5 +62,7 @@ class Bezier : Curve {
 };
 
 // TODO: PieceWiseBezier
+
+}  // namespace gk::geometry
 
 #include "Bezier_impl.hpp"

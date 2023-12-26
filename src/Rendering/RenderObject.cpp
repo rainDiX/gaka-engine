@@ -39,7 +39,7 @@ void setupAttribPointer(const std::vector<VertexAttribute>& attributes,
     }
 }
 
-RenderObject::RenderObject(const geometry::Mesh& mesh,
+RenderObject::RenderObject(const gk::geometry::Mesh& mesh,
                            const std::shared_ptr<ShaderProgram> program,
                            const std::vector<Texture>& textures,
                            const std::shared_ptr<Material> material)
@@ -98,7 +98,7 @@ void RenderObject::draw(
     glDrawElements(m_drawingMode, m_indexCount, GL_UNSIGNED_INT, nullptr);
 }
 
-void RenderObject::update(const geometry::Mesh& mesh) {
+void RenderObject::update(const gk::geometry::Mesh& mesh) {
     m_indexCount = static_cast<GLint>(mesh.indices.size());
     m_vertexBufferSize =
         updateBuffer(m_vbo, mesh.vertices, m_vertexBufferSize, GL_ARRAY_BUFFER);
