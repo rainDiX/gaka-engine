@@ -57,7 +57,7 @@ const std::vector<glm::vec3>& Bezier<N>::ctrlPoints() {
 }
 
 template <size_t N>
-glm::vec3& Bezier<N>::operator[](int index) {
+glm::vec3& Bezier<N>::operator[](size_t index) {
     if (index < 0 || index >= N) {
         throw std::out_of_range("Index out of range");
     }

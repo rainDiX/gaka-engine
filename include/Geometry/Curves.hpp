@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <glm/fwd.hpp>
 #include <glm/vec2.hpp>
 #include <glm/vec3.hpp>
@@ -12,8 +13,7 @@
 
 class Curve {
    public:
-    Curve() {}
-    ~Curve() {}
+    virtual ~Curve() {}
     virtual const std::vector<unsigned>& indices() = 0;
     virtual const std::vector<glm::vec3>& curve() = 0;
 };
@@ -26,7 +26,7 @@ class SimpleCurve : Curve {
     void registerPoints(std::vector<glm::vec3> points);
     const std::vector<unsigned>& indices() override;
     const std::vector<glm::vec3>& curve() override;
-    glm::vec3& operator[](int index);
+    glm::vec3& operator[](size_t index);
 
    private:
     void updateIndices();
@@ -48,7 +48,7 @@ class Bezier : Curve {
     unsigned int nbSegments();
     void setNbSegments(unsigned int nbSegments);
 
-    glm::vec3& operator[](int index);
+    glm::vec3& operator[](size_t index);
 
    private:
     void evaluate();

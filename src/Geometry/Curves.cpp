@@ -4,12 +4,11 @@
 
 #include "Geometry/Curves.hpp"
 
+#include <cstddef>
 #include <glm/ext/vector_float3.hpp>
 #include <glm/fwd.hpp>
 #include <stdexcept>
 #include <vector>
-
-#include "Geometry/algorithm.hpp"
 
 void SimpleCurve::registerPoint(glm::vec2 point) {
     m_points.push_back(glm::vec3(point, 0.0));
@@ -36,7 +35,7 @@ void SimpleCurve::registerPoints(std::vector<glm::vec3> points) {
 
 inline void SimpleCurve::updateIndices() {
     m_indices.reserve(m_points.size() * 2);
-    for (int i = 0; i < m_points.size(); ++i) {
+    for (size_t i = 0; i < m_points.size(); ++i) {
         m_indices.push_back(i);
         if (i < m_points.size()) {
             m_indices.push_back(i + 1);
@@ -44,7 +43,7 @@ inline void SimpleCurve::updateIndices() {
     }
 }
 
-glm::vec3& SimpleCurve::operator[](int index) {
+glm::vec3& SimpleCurve::operator[](size_t index) {
     if (index < 0 || index >= m_points.size()) {
         throw std::out_of_range("Index out of range");
     }
