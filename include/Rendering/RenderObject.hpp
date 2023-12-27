@@ -11,10 +11,10 @@
 #include <vector>
 
 #include "../Geometry/Mesh.hpp"
+#include "GPU/OpenGL/GLShaderProgram.hpp"
+#include "GPU/OpenGL/Texture.hpp"
 #include "Material.hpp"
 #include "PointLight.hpp"
-#include "ShaderProgram.hpp"
-#include "Texture.hpp"
 
 enum DrawingMode {
     POINTS = GL_POINTS,
@@ -30,19 +30,18 @@ enum DrawingMode {
     TRIANGLE_STRIP_ADJACENCY = GL_TRIANGLE_STRIP_ADJACENCY,
 };
 
+namespace gk::rendering {
+
 class RenderObject {
    public:
-    RenderObject(const gk::geometry::Mesh& mesh, const std::shared_ptr<ShaderProgram> program,
-                 const std::vector<Texture>& textures,
-                 const std::shared_ptr<Material> material);
+    RenderObject(const gk::geometry::Mesh& mesh, const std::shared_ptr<gpu::gl::GLShaderProgram> program,
+                 const std::vector<Texture>& textures, const std::shared_ptr<Material> material);
     RenderObject(const RenderObject&) = delete;
     RenderObject& operator=(const RenderObject&) = delete;
     ~RenderObject();
     void bind() const;
-    void draw(
-        const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix,
-        const glm::mat4& modelMatrix,
-        const std::vector<std::pair<PointLight, glm::vec3>>& lights) const;
+    void draw(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix, const glm::mat4& modelMatrix,
+              const std::vector<std::pair<PointLight, glm::vec3>>& lights) const;
     void update(const gk::geometry::Mesh& mesh);
     void setDrawingMode(const DrawingMode mode);
     DrawingMode drawingMode() const;
@@ -52,7 +51,9 @@ class RenderObject {
     GLint m_indexCount;
     size_t m_vertexBufferSize;
     DrawingMode m_drawingMode;
-    std::shared_ptr<ShaderProgram> m_program;
+    std::shared_ptr<gpu::gl::GLShaderProgram> m_program;
     std::shared_ptr<Material> m_material;
     std::vector<Texture> m_textures;
 };
+
+}  // namespace gk::rendering

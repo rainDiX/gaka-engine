@@ -15,6 +15,8 @@
 #include "PointLight.hpp"
 #include "RenderObject.hpp"
 
+namespace gk::rendering {
+
 class Scene {
    public:
     Scene();
@@ -32,3 +34,5 @@ class Scene {
     std::unordered_map<std::string, std::unique_ptr<RenderObject>> m_objects;
     std::vector<std::pair<PointLight, glm::vec3>> m_pointLights;
 };
+
+}  // namespace gk::rendering

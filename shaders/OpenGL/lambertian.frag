@@ -1,8 +1,9 @@
-#version 460 core
+#version 450 core
 out vec4 color;
 
 in vec3 position_world;
 in vec3 position_view;
+in vec3 position;
 in vec3 normal;
 in vec2 tex_coords;
 
@@ -12,22 +13,20 @@ struct Material {
     vec3 specular;
     float shininess;
 };
-
-uniform Material material;
-
 struct PointLight {
     vec3 color;
     float intensity;
     float range;
     float decay;
     vec3 position;
-};  
+};
 
 #define MAX_POINTS_LIGHTS 10
 
 uniform int nb_point_lights;
-uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 uniform mat4 model;
+uniform Material material;
+uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 
 
 vec3 calculatePointLight(PointLight light) {

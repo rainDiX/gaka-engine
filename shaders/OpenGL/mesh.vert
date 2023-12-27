@@ -1,8 +1,8 @@
-#version 460 core
+#version 450 core
 
-layout (location = 0) in vec3 in_position;
-layout (location = 1) in vec3 in_normal;
-layout (location = 2) in vec2 in_tex_coords;
+in vec3 in_position;
+in vec3 in_normal;
+in vec2 in_tex_coords;
 
 out vec3 position_world;
 out vec3 position_view;
@@ -22,7 +22,6 @@ void main() {
     normal = normalize(mat3(model) * in_normal);
     position_view = vec3(pos_view);
     tex_coords = in_tex_coords;
-    
-    gl_Position = projection * pos_view;
 
+    gl_Position = projection * pos_view;
 }

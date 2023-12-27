@@ -4,10 +4,9 @@
 
 #include "IO/AssetManager.hpp"
 
-#include <filesystem>
 #include <fstream>
-#include <memory>
-#include <string>
+
+namespace gk::io {
 
 AssetManager::AssetManager(const char* root_dir_path) {
     auto root_dir = std::filesystem::current_path();
@@ -15,8 +14,7 @@ AssetManager::AssetManager(const char* root_dir_path) {
     m_rootDir = std::filesystem::path(std::move(root_dir));
 }
 
-std::unique_ptr<std::string> AssetManager::readString(
-    const std::string& assetPath) const {
+std::unique_ptr<std::string> AssetManager::readString(const std::string& assetPath) const {
     auto asset_path = m_rootDir / assetPath;
     auto asset_file = std::ifstream(asset_path);
     auto size = std::filesystem::file_size(asset_path);
@@ -28,3 +26,21 @@ std::unique_ptr<std::string> AssetManager::readString(
     }
     return out;
 }
+
+std::expected<std::vector<char>, Error> AssetManager::readBinary(const std::string& assetPath) const noexcept {
+    auto path = m_rootDir / assetPath;
+    auto file = std::ifstream(path, std::ios::binary);
+    size_t size = std::filesystem::file_size(path);
+    std::vector<char> buffer(size);
+
+    if (file.is_open()) {
+        file.seekg(0);
+        file.read(buffer.data(), size);
+        file.close();
+        return buffer;
+    }
+
+    return std::unexpected{IOError{}};
+}
+
+}  // namespace gk::io

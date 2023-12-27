@@ -2,17 +2,17 @@
 
 #include <iostream>
 #include <memory>
-#include <optional>
 #include <stdexcept>
 #include <string>
-#include <vector>
 
+#include "GPU/OpenGL/GLShaderProgram.hpp"
 #include "Rendering/FlyingCamera.hpp"
 #include "Rendering/RenderObject.hpp"
 #include "Rendering/Scene.hpp"
-#include "Rendering/ShaderProgram.hpp"
 
-Renderer::Renderer(std::shared_ptr<AssetManager> assetManager) : m_asset_manager(assetManager) {
+namespace gk::rendering {
+
+Renderer::Renderer(std::shared_ptr<io::AssetManager> assetManager) : m_asset_manager(assetManager) {
     auto err = glewInit();
     if (err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY) {
         std::cout << glewGetErrorString(err) << std::endl;
@@ -32,29 +32,30 @@ Renderer::Renderer(std::shared_ptr<AssetManager> assetManager) : m_asset_manager
 
 // temporary
 void Renderer::compileShaders() {
-    auto line = std::make_shared<ShaderProgram>();
-    line->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
-    line->compileFile("shaders/line.frag", *m_asset_manager, ShaderType::Fragment);
+    auto line = std::make_shared<gpu::gl::GLShaderProgram>();
+    line->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
+    line->compileFile("shaders/line.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
     line->link();
 
-    auto normal = std::make_shared<ShaderProgram>();
-    normal->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
-    normal->compileFile("shaders/normals.frag", *m_asset_manager, ShaderType::Fragment);
+    auto normal = std::make_shared<gpu::gl::GLShaderProgram>();
+    normal->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
+    normal->compileFile("shaders/normals.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
     normal->link();
 
-    auto parametric = std::make_shared<ShaderProgram>();
-    parametric->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
-    parametric->compileFile("shaders/parametric.frag", *m_asset_manager, ShaderType::Fragment);
+    auto parametric = std::make_shared<gpu::gl::GLShaderProgram>();
+    parametric->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
+    parametric->compileFile("shaders/parametric.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
     parametric->link();
 
-    auto lambertian = std::make_shared<ShaderProgram>();
-    lambertian->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
-    lambertian->compileFile("shaders/lambertian.frag", *m_asset_manager, ShaderType::Fragment);
+    auto lambertian = std::make_shared<gpu::gl::GLShaderProgram>();
+    std::cerr << lambertian->id() << '\n';
+    lambertian->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
+    lambertian->compileFile("shaders/lambertian.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
     lambertian->link();
 
-    auto phong = std::make_shared<ShaderProgram>();
-    phong->compileFile("shaders/mesh.vert", *m_asset_manager, ShaderType::Vertex);
-    phong->compileFile("shaders/phong.frag", *m_asset_manager, ShaderType::Fragment);
+    auto phong = std::make_shared<gpu::gl::GLShaderProgram>();
+    phong->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
+    phong->compileFile("shaders/phong.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
     phong->link();
 
     m_programs.insert(std::make_pair("line", line));
@@ -83,7 +84,7 @@ Scene& Renderer::getScene() { return m_scene; }
 
 const Scene& Renderer::getScene() const { return m_scene; }
 
-const std::shared_ptr<ShaderProgram> Renderer::getProgram(const std::string& name) const {
+const std::shared_ptr<gpu::gl::GLShaderProgram> Renderer::getProgram(const std::string& name) const {
     auto it = m_programs.find(name);
     if (it != m_programs.end()) {
         return it->second;
@@ -101,3 +102,5 @@ void Renderer::resize(int width, int height) {
     m_aspectRatio = float(width) / float(height);
     glViewport(0, 0, width, height);
 }
+
+}  // namespace gk::rendering
