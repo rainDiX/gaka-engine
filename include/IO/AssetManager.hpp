@@ -5,20 +5,20 @@
 
 #include <expected>
 #include <filesystem>
-#include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
 namespace gk::io {
 
+struct NotFoundError {};
 struct IOError {};
 
-using Error = std::variant<IOError>;
+using Error = std::variant<NotFoundError, IOError>;
 class AssetManager {
    public:
     AssetManager(const char* root_dir);
-    std::unique_ptr<std::string> readString(const std::string& assetPath) const;
+    std::expected<std::string, Error> readString(const std::string& assetPath) const noexcept;
     std::expected<std::vector<char>, Error> readBinary(const std::string& assetPath) const noexcept;
 
    private:

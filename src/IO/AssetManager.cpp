@@ -4,6 +4,7 @@
 
 #include "IO/AssetManager.hpp"
 
+#include <filesystem>
 #include <fstream>
 
 namespace gk::io {
@@ -14,22 +15,31 @@ AssetManager::AssetManager(const char* root_dir_path) {
     m_rootDir = std::filesystem::path(std::move(root_dir));
 }
 
-std::unique_ptr<std::string> AssetManager::readString(const std::string& assetPath) const {
-    auto asset_path = m_rootDir / assetPath;
-    auto asset_file = std::ifstream(asset_path);
-    auto size = std::filesystem::file_size(asset_path);
-    auto out = std::make_unique<std::string>();
+std::expected<std::string, Error> AssetManager::readString(const std::string& assetPath) const noexcept {
+    auto path = m_rootDir / assetPath;
+    auto asset_file = std::ifstream(path);
+
+    if (!std::filesystem::exists(path)) {
+        return std::unexpected{NotFoundError{}};
+    }
+
+    auto size = std::filesystem::file_size(path);
+    std::string buffer;
+    buffer.resize(size);
 
     if (asset_file.is_open()) {
-        out->resize(size);
-        asset_file.read(&(*out)[0], size);
+        asset_file.read(&buffer[0], size);
+        return buffer;
     }
-    return out;
+    return std::unexpected{IOError{}};
 }
 
 std::expected<std::vector<char>, Error> AssetManager::readBinary(const std::string& assetPath) const noexcept {
     auto path = m_rootDir / assetPath;
     auto file = std::ifstream(path, std::ios::binary);
+    if (!std::filesystem::exists(path)) {
+        return std::unexpected{NotFoundError{}};
+    }
     size_t size = std::filesystem::file_size(path);
     std::vector<char> buffer(size);
 
@@ -39,7 +49,6 @@ std::expected<std::vector<char>, Error> AssetManager::readBinary(const std::stri
         file.close();
         return buffer;
     }
-
     return std::unexpected{IOError{}};
 }
 
