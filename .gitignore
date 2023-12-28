@@ -74,4 +74,5 @@ _deps
 
 # build directory
 /build
+/out
 /.cache
