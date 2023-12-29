@@ -10,14 +10,14 @@
 
 namespace gk::gfx::gl {
 enum GLTextureType {
-    DIFFUSE,
-    SPECULAR,
+  DIFFUSE,
+  SPECULAR,
 };
 
 struct GLTexture {
-    GLuint id;
-    GLTextureType txType;
-    std::string path;
+  GLuint id;
+  GLTextureType txType;
+  std::string path;
 };
 
 }  // namespace gk::gfx::gl

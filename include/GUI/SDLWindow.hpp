@@ -11,17 +11,17 @@
 namespace gk::gui {
 
 class SDLWindow : public Window {
-   public:
-    virtual ~SDLWindow() {}
-    void toggleMouseLock() override;
-    const WindowState& state() const override;
-    const std::string_view title() const override;
-    void setTitle(const std::string& title) override;
-    void update() override;
+ public:
+  virtual ~SDLWindow() {}
+  void toggleMouseLock() override;
+  const WindowState& state() const override;
+  const std::string_view title() const override;
+  void setTitle(const std::string& title) override;
+  void update() override;
 
-   protected:
-    SDL_Window* m_window = nullptr;
-    WindowState m_state;
+ protected:
+  SDL_Window* m_window = nullptr;
+  WindowState m_state;
 };
 
 }  // namespace gk::gui

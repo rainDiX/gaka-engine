@@ -8,24 +8,24 @@
 
 namespace gk::gui {
 class SDLOpenGLWindow : public SDLWindow {
-   public:
-    SDLOpenGLWindow(const std::string& title, int width = 1280, int height = 720, bool fullscreen = false,
-                    bool vsync = false);
-    SDLOpenGLWindow() = delete;
-    ~SDLOpenGLWindow();
+ public:
+  SDLOpenGLWindow(const std::string& title, int width = 1280, int height = 720,
+                  bool fullscreen = false, bool vsync = false);
+  SDLOpenGLWindow() = delete;
+  ~SDLOpenGLWindow();
 
-    SDLOpenGLWindow(const SDLWindow& other) = delete;
-    SDLOpenGLWindow& operator=(const SDLOpenGLWindow& other) = delete;
+  SDLOpenGLWindow(const SDLWindow& other) = delete;
+  SDLOpenGLWindow& operator=(const SDLOpenGLWindow& other) = delete;
 
-    void update() override;
+  void update() override;
 
-   private:
-    int getMaxMultisampleSamples();
+ private:
+  int getMaxMultisampleSamples();
 
-   private:
-    SDL_Window* m_window;
-    SDL_GLContext m_context;
-    WindowState m_state;
+ private:
+  SDL_Window* m_window;
+  SDL_GLContext m_context;
+  WindowState m_state;
 };
 
 }  // namespace gk::gui
