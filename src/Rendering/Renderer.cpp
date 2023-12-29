@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 #include "GFX/OpenGL/GLShaderProgram.hpp"
@@ -14,12 +13,6 @@ namespace gk::rendering {
 
 Renderer::Renderer(std::shared_ptr<io::RessourceManager> assetManager)
     : m_ressourceManager(assetManager) {
-  auto err = glewInit();
-  if (err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY) {
-    std::cout << glewGetErrorString(err) << std::endl;
-    throw std::runtime_error("Failed to initialize OpenGL context");
-  }
-
   std::cerr << "Loaded OpenGL " << glGetString(GL_VERSION) << std::endl;
 
   glEnable(GL_MULTISAMPLE);

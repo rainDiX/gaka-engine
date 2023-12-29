@@ -2,9 +2,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-// GL
-#include <GL/glew.h>
-
 // SDL2
 #include <SDL2/SDL_events.h>
 #include <SDL2/SDL_keycode.h>

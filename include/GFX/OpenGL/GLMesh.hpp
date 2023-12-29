@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <GL/glew.h>
+#include <epoxy/gl.h>
 #include <sys/types.h>
 
 #include <cstddef>

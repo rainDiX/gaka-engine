@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 project(gaka C CXX)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -17,11 +19,9 @@ find_package(SDL2 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(SailC++ CONFIG REQUIRED)
 
-if(GAKA_OPENGL)
-  set(OpenGL_GL_PREFERENCE GLVND)
-  find_package(OpenGL REQUIRED)
-  find_package(GLEW REQUIRED)
-endif()
+set(OpenGL_GL_PREFERENCE GLVND)
+find_package(OpenGL REQUIRED)
+find_package(libepoxy REQUIRED)
 
 set(gaka_include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

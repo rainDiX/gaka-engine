@@ -27,9 +27,9 @@ target_include_directories(gaka_gl PRIVATE ${gaka_include_dir})
 
 target_link_libraries(gakaIO PUBLIC SAIL::sail-c++)
 target_link_libraries(gakaGeometry glm::glm)
-target_link_libraries(gakaGFXOpenGL PUBLIC OpenGL::OpenGL GLEW::GLEW glm::glm SAIL::sail-c++)
-target_link_libraries(gakaRendering PUBLIC gakaIO gakaGeometry OpenGL::OpenGL GLEW::GLEW glm::glm gakaGFXOpenGL)
-target_link_libraries(gakaGUIOpenGL PUBLIC SDL2::SDL2main SDL2::SDL2 OpenGL::OpenGL GLEW::GLEW gakaRendering glm::glm)
+target_link_libraries(gakaGFXOpenGL PUBLIC OpenGL::OpenGL libepoxy glm::glm SAIL::sail-c++)
+target_link_libraries(gakaRendering PUBLIC gakaIO gakaGeometry OpenGL::OpenGL libepoxy glm::glm gakaGFXOpenGL)
+target_link_libraries(gakaGUIOpenGL PUBLIC SDL2::SDL2main SDL2::SDL2 OpenGL::OpenGL libepoxy gakaRendering glm::glm)
 target_link_libraries(gaka_gl PUBLIC gakaGUIOpenGL ${CMAKE_DL_LIBS})
 
 install(TARGETS gaka_gl RUNTIME DESTINATION bin)
