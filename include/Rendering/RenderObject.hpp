@@ -43,7 +43,7 @@ class RenderObject {
 
 
    private:
-    std::shared_ptr<gfx::gl::GLMesh> m_mesh;
+    std::unique_ptr<gfx::gl::GLMesh> m_mesh;
     std::shared_ptr<gfx::gl::GLShaderProgram> m_program;
     std::shared_ptr<Material> m_material;
     std::vector<gfx::gl::GLTexture> m_textures;
