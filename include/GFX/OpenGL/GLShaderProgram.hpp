@@ -39,7 +39,7 @@ class GLShaderProgram {
   void compileFile(const std::string& relativePath, io::RessourceManager& assetManager,
                    ShaderType type) const noexcept;
   void link() noexcept;
-  void setupAttribPointer() const noexcept;
+  void enableVertexAttributes() const noexcept;
 
   template <typename T>
   void setUniform(const std::string& name, const T value) const noexcept;

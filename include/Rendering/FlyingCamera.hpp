@@ -20,10 +20,10 @@ class FlyingCamera {
   glm::mat4 getViewMatrix() const;
 
  private:
-  glm::vec3 position_;
-  glm::vec3 viewPoint_;
-  glm::vec3 up_;
-  float fov_;
+  glm::vec3 m_position;
+  glm::vec3 m_viewPoint;
+  glm::vec3 m_up;
+  float m_fov;
   glm::vec3 getNormalizedViewVector() const;
   void rotateBy(float angle, glm::vec3&& axis);
 };

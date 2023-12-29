@@ -104,7 +104,7 @@ void GLShaderProgram::updateAttributes() noexcept {
     attrib.stride = offset;
   }
 }
-void GLShaderProgram::setupAttribPointer() const noexcept {
+void GLShaderProgram::enableVertexAttributes() const noexcept {
   for (auto& attrib : m_attributes) {
     glVertexAttribPointer(attrib.location, attrib.size, GL_FLOAT, GL_FALSE, attrib.stride,
                           attrib.offset);
@@ -126,7 +126,6 @@ void GLShaderProgram::link() noexcept {
     } else {
       m_linked = true;
       updateAttributes();
-      setupAttribPointer();
       deleteAttachedShaders(m_id);
     }
   }

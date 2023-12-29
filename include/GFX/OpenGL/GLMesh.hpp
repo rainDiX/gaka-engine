@@ -75,7 +75,7 @@ GLMesh::GLMesh(const std::span<const V>& vertices, const GLShaderProgram* progra
   m_vbo = 0;
   m_ebo = 0;
   setupVertexObjects(m_vao, m_vbo, vertices);
-  program->setupAttribPointer();
+  program->enableVertexAttributes();
   m_vertexBufferSize = vertices.size();
 }
 
@@ -89,7 +89,7 @@ GLMesh::GLMesh(const std::span<const V>& vertices, const std::span<const uint>& 
   m_ebo = 0;
   setupVertexObjects(m_vao, m_vbo, vertices);
   setupElementObjects(m_ebo, indices);
-  program->setupAttribPointer();
+  program->enableVertexAttributes();
 
   m_indexBufferSize = indices.size();
   m_vertexBufferSize = vertices.size();
