@@ -50,8 +50,8 @@ void gk::geometry::BezierSurface<M, N>::evaluate() {
       Vertex vertex;
       vertex.position = deCasteljau(u, q_points.cbegin() + i * M, q_points.cbegin() + (i + 1) * M);
       vertex.normal = glm::vec3(0.0, 0.0, 0.0);
-      vertex.tex_coords = glm::vec2(1.0, 1.0);
-
+      vertex.uv =
+          glm::vec2(static_cast<float>(i) / m_meshEdges, static_cast<float>(j) / m_meshEdges);
       m_mesh.vertices.push_back(vertex);
     }
   }

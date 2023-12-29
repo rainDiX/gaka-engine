@@ -6,7 +6,8 @@
 
 #include <epoxy/gl.h>
 
-#include <string>
+#include <cstddef>
+#include <span>
 
 namespace gk::gfx::gl {
 enum GLTextureType {
@@ -14,10 +15,18 @@ enum GLTextureType {
   SPECULAR,
 };
 
-struct GLTexture {
-  GLuint id;
+class GLTexture {
+ public:
+  GLTexture(const std::span<const std::byte> data, GLsizei width, GLsizei height);
+  GLTexture() = delete;
+  ~GLTexture();
+  GLTexture(const GLTexture&) = delete;
+  GLTexture& operator=(const GLTexture&) = delete;
+  void bind() const noexcept;
+
+ private:
+  GLuint m_id;
   GLTextureType txType;
-  std::string path;
 };
 
 }  // namespace gk::gfx::gl

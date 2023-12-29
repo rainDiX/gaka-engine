@@ -9,15 +9,15 @@
 #include <vector>
 
 #include "GFX/OpenGL/GLMesh.hpp"
+#include "GFX/OpenGL/GLTexture.hpp"
 #include "Geometry/Mesh.hpp"
 
 namespace gk::rendering {
 
 RenderObject::RenderObject(const gk::geometry::Mesh& mesh,
                            const std::shared_ptr<gfx::gl::GLShaderProgram> program,
-                           const std::vector<gfx::gl::GLTexture>& textures,
                            const std::shared_ptr<Material> material)
-    : m_program(program), m_material(material), m_textures(textures) {
+    : m_program(program), m_material(material) {
   m_mesh = std::make_unique<gfx::gl::GLMesh>(std::span<const geometry::Vertex>{mesh.vertices},
                                              mesh.indices, m_program.get());
 }
@@ -46,7 +46,16 @@ void RenderObject::draw(const glm::mat4& projection_matrix, const glm::mat4& vie
     m_program->setUniform("pointLights[" + std::to_string(i) + "].decay", lights[i].first.decay);
     m_program->setUniform("pointLights[" + std::to_string(i) + "].position", &lights[i].second);
   }
+
+  for (auto& tex : m_textures) {
+    tex->bind();
+  }
+
   m_mesh->draw();
+}
+
+void RenderObject::addTexture(std::shared_ptr<gfx::gl::GLTexture> texture) noexcept {
+  m_textures.push_back(texture);
 }
 
 gfx::gl::GLMesh& RenderObject::mesh() noexcept { return *m_mesh; }
@@ -58,8 +67,10 @@ const gfx::gl::GLShaderProgram& RenderObject::program() const noexcept { return 
 Material& RenderObject::material() noexcept { return *m_material; }
 const Material& RenderObject::material() const noexcept { return *m_material; }
 
-std::vector<gfx::gl::GLTexture>& RenderObject::textures() noexcept { return m_textures; }
-const std::span<const gfx::gl::GLTexture> RenderObject::textures() const noexcept {
+std::vector<std::shared_ptr<gfx::gl::GLTexture>>& RenderObject::textures() noexcept {
+  return m_textures;
+}
+const std::span<const std::shared_ptr<gfx::gl::GLTexture>> RenderObject::textures() const noexcept {
   return m_textures;
 }
 

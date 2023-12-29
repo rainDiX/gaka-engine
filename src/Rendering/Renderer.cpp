@@ -43,7 +43,6 @@ void Renderer::compileShaders() {
   parametric->link();
 
   auto lambertian = std::make_shared<gfx::gl::GLShaderProgram>();
-  std::cerr << lambertian->id() << '\n';
   lambertian->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
   lambertian->compileFile("shaders/lambertian.frag", *m_ressourceManager,
                           gfx::gl::ShaderType::FRAGMENT);

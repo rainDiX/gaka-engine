@@ -5,7 +5,7 @@ in vec3 position_world;
 in vec3 position_view;
 in vec3 position;
 in vec3 normal;
-in vec2 tex_coords;
+in vec2 uv;
 
 struct Material {
     vec3 ambient;
@@ -28,6 +28,7 @@ uniform mat4 model;
 uniform Material material;
 uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 
+uniform sampler2D tex;
 
 vec3 calculatePointLight(PointLight light) {
     vec3 light_dir = normalize(light.position - position_world);
@@ -58,5 +59,6 @@ void main() {
         result += calculatePointLight(pointLights[i]);
 
     // TODO : support textures to avoid this quirk
-    color = vec4(result.x * tex_coords.x, result.y * tex_coords.y, result.z, 1.0);
+    color = vec4(result.x * uv.x, result.y*uv.y, result.z, 1.0);
+    color *= texture(tex, uv);
 }

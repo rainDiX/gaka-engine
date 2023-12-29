@@ -13,13 +13,14 @@ target_include_directories(gakaRendering PRIVATE ${gaka_include_dir})
 add_library(gakaGFXOpenGL
     GFX/OpenGL/GLHelperFn.cpp
     GFX/OpenGL/GLShaderProgram.cpp
-    GFX/OpenGL/GLMesh.cpp)
-add_library(gakaGUIOpenGL
-    GUI/SDLWindow.cpp
-    GUI/SDLOpenGLWindow.cpp
-)
-add_dependencies(gakaGFXOpenGL OpenGLShaders)
-add_executable(gaka_gl main.cpp)
+        GFX/OpenGL/GLMesh.cpp
+        GFX/OpenGL/GLTexture.cpp)
+    add_library(gakaGUIOpenGL
+        GUI/SDLWindow.cpp
+        GUI/SDLOpenGLWindow.cpp
+    )
+    add_dependencies(gakaGFXOpenGL OpenGLShaders)
+    add_executable(gaka_gl main.cpp)
 
 target_include_directories(gakaGUIOpenGL PRIVATE ${gaka_include_dir})
 target_include_directories(gakaGFXOpenGL PRIVATE ${gaka_include_dir})

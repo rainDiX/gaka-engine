@@ -4,7 +4,7 @@ out vec4 color;
 in vec3 position_world;
 in vec3 position_view;
 in vec3 normal;
-in vec2 tex_coords;
+in vec2 uv;
 
 struct Material {
     vec3 ambient;
@@ -57,5 +57,5 @@ void main() {
     for(int i = 0; i < nb_point_lights; i++) result += calculatePointLight(pointLights[i]);
 
     // TODO : support textures to avoid this quirk
-    color = vec4(result.x * tex_coords.x, result.y * tex_coords.y, result.z, 1.0);
+    color = vec4(result.x * uv.x, result.y * uv.y, result.z, 1.0);
 }

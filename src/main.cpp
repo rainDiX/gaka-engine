@@ -10,9 +10,11 @@
 #include <cstddef>
 #include <memory>
 #include <random>
+#include <span>
 #include <vector>
 
 #include "GFX/OpenGL/GLShaderProgram.hpp"
+#include "GFX/OpenGL/GLTexture.hpp"
 #include "GUI/SDLOpenGLWindow.hpp"
 #include "Geometry/Curves.hpp"
 #include "Geometry/Mesh.hpp"
@@ -61,10 +63,8 @@ void bezierDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
         ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
   }
 
-  auto curveObj = std::make_unique<gk::rendering::RenderObject>(
-      curveMesh, program, std::vector<gk::gfx::gl::GLTexture>(), copper);
-  auto ctrlObj = std::make_unique<gk::rendering::RenderObject>(
-      ctrlMesh, program, std::vector<gk::gfx::gl::GLTexture>(), copper);
+  auto curveObj = std::make_unique<gk::rendering::RenderObject>(curveMesh, program, copper);
+  auto ctrlObj = std::make_unique<gk::rendering::RenderObject>(ctrlMesh, program, copper);
 
   curveObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
   ctrlObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
@@ -73,8 +73,8 @@ void bezierDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
   scene.addObject("bezier Curve", std::move(curveObj));
 }
 
-void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
-                 gk::rendering::Scene& scene) {
+void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program, gk::rendering::Scene& scene,
+                 gk::io::RessourceManager& ressourceManager) {
   std::random_device rd;
   std::mt19937 gen(rd());
   std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -86,7 +86,7 @@ void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
     }
   }
 
-  auto surface = gk::geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 1005);
+  auto surface = gk::geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 100);
 
   auto copper = std::make_shared<Material>();
   copper->name = std::string("copper");
@@ -95,9 +95,17 @@ void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
   copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
   copper->shininess = 0.1;
 
-  auto surfaceObj = std::make_unique<gk::rendering::RenderObject>(
-      surface.mesh(), program, std::vector<gk::gfx::gl::GLTexture>(), copper);
+  auto surfaceObj = std::make_unique<gk::rendering::RenderObject>(surface.mesh(), program, copper);
 
+  auto wallTex = ressourceManager.readImage("assets/wall.jpg");
+
+  if (wallTex) {
+    auto img = *wallTex;
+    auto texture = std::make_shared<gk::gfx::gl::GLTexture>(
+        std::span<std::byte>{static_cast<std::byte*>(img.pixels()), img.pixels_size()}, img.width(),
+        img.height());
+    surfaceObj->addTexture(texture);
+  }
   scene.addObject("surface", std::move(surfaceObj));
 }
 
@@ -106,8 +114,8 @@ class Application {
   Application() {
     m_window =
         std::make_unique<gk::gui::SDLOpenGLWindow>("Gaka Demo", SCR_WIDTH, SCR_HEIGHT, false, true);
-    m_assetManager = std::make_shared<gk::io::RessourceManager>(".");  // TODO improve
-    m_renderer = std::make_unique<gk::rendering::Renderer>(m_assetManager);
+    m_ressourceManager = std::make_shared<gk::io::RessourceManager>(".");  // TODO improve
+    m_renderer = std::make_unique<gk::rendering::Renderer>(m_ressourceManager);
     m_renderer->resize(SCR_WIDTH, SCR_HEIGHT);
 
     auto line = m_renderer->getProgram("line");
@@ -117,7 +125,7 @@ class Application {
 
     auto& scene = m_renderer->getScene();
     // bezierDemo(line, scene);
-    surfaceDemo(lambertian, scene);
+    surfaceDemo(lambertian, scene, *m_ressourceManager);
 
     scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
     scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
@@ -211,7 +219,7 @@ class Application {
 
  private:
   std::unique_ptr<gk::gui::SDLOpenGLWindow> m_window;
-  std::shared_ptr<gk::io::RessourceManager> m_assetManager = nullptr;
+  std::shared_ptr<gk::io::RessourceManager> m_ressourceManager = nullptr;
   std::unique_ptr<gk::rendering::Renderer> m_renderer = nullptr;
 };
 
