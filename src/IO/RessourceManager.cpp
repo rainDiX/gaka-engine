@@ -2,20 +2,20 @@
  * SPDX-License-Identifier: MIT
  */
 
-#include "IO/AssetManager.hpp"
+#include "IO/RessourceManager.hpp"
 
 #include <filesystem>
 #include <fstream>
 
 namespace gk::io {
 
-AssetManager::AssetManager(const char* root_dir_path) {
+RessourceManager::RessourceManager(const char* root_dir_path) {
     auto root_dir = std::filesystem::current_path();
     root_dir /= root_dir_path;
     m_rootDir = std::filesystem::path(std::move(root_dir));
 }
 
-std::expected<std::string, Error> AssetManager::readString(const std::string& assetPath) const noexcept {
+std::expected<std::string, Error> RessourceManager::readString(const std::string& assetPath) const noexcept {
     auto path = m_rootDir / assetPath;
     auto asset_file = std::ifstream(path);
 
@@ -34,7 +34,7 @@ std::expected<std::string, Error> AssetManager::readString(const std::string& as
     return std::unexpected{IOError{}};
 }
 
-std::expected<std::vector<char>, Error> AssetManager::readBinary(const std::string& assetPath) const noexcept {
+std::expected<std::vector<char>, Error> RessourceManager::readBinary(const std::string& assetPath) const noexcept {
     auto path = m_rootDir / assetPath;
     auto file = std::ifstream(path, std::ios::binary);
     if (!std::filesystem::exists(path)) {
@@ -48,6 +48,20 @@ std::expected<std::vector<char>, Error> AssetManager::readBinary(const std::stri
         file.read(buffer.data(), size);
         file.close();
         return buffer;
+    }
+    return std::unexpected{IOError{}};
+}
+
+std::expected<sail::image, Error> RessourceManager::readImage(const std::string& assetPath) const noexcept {
+    auto path = m_rootDir / assetPath;
+    auto file = std::ifstream(path, std::ios::binary);
+    if (!std::filesystem::exists(path)) {
+        return std::unexpected{NotFoundError{}};
+    }
+    sail::image image(path);
+
+    if (image.is_valid()) {
+        return image;
     }
     return std::unexpected{IOError{}};
 }

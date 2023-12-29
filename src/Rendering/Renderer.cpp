@@ -5,14 +5,14 @@
 #include <stdexcept>
 #include <string>
 
-#include "GPU/OpenGL/GLShaderProgram.hpp"
+#include "GFX/OpenGL/GLShaderProgram.hpp"
 #include "Rendering/FlyingCamera.hpp"
 #include "Rendering/RenderObject.hpp"
 #include "Rendering/Scene.hpp"
 
 namespace gk::rendering {
 
-Renderer::Renderer(std::shared_ptr<io::AssetManager> assetManager) : m_asset_manager(assetManager) {
+Renderer::Renderer(std::shared_ptr<io::RessourceManager> assetManager) : m_ressourceManager(assetManager) {
     auto err = glewInit();
     if (err != GLEW_OK && err != GLEW_ERROR_NO_GLX_DISPLAY) {
         std::cout << glewGetErrorString(err) << std::endl;
@@ -32,30 +32,30 @@ Renderer::Renderer(std::shared_ptr<io::AssetManager> assetManager) : m_asset_man
 
 // temporary
 void Renderer::compileShaders() {
-    auto line = std::make_shared<gpu::gl::GLShaderProgram>();
-    line->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
-    line->compileFile("shaders/line.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
+    auto line = std::make_shared<gfx::gl::GLShaderProgram>();
+    line->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+    line->compileFile("shaders/line.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
     line->link();
 
-    auto normal = std::make_shared<gpu::gl::GLShaderProgram>();
-    normal->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
-    normal->compileFile("shaders/normals.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
+    auto normal = std::make_shared<gfx::gl::GLShaderProgram>();
+    normal->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+    normal->compileFile("shaders/normals.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
     normal->link();
 
-    auto parametric = std::make_shared<gpu::gl::GLShaderProgram>();
-    parametric->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
-    parametric->compileFile("shaders/parametric.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
+    auto parametric = std::make_shared<gfx::gl::GLShaderProgram>();
+    parametric->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+    parametric->compileFile("shaders/parametric.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
     parametric->link();
 
-    auto lambertian = std::make_shared<gpu::gl::GLShaderProgram>();
+    auto lambertian = std::make_shared<gfx::gl::GLShaderProgram>();
     std::cerr << lambertian->id() << '\n';
-    lambertian->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
-    lambertian->compileFile("shaders/lambertian.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
+    lambertian->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+    lambertian->compileFile("shaders/lambertian.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
     lambertian->link();
 
-    auto phong = std::make_shared<gpu::gl::GLShaderProgram>();
-    phong->compileFile("shaders/mesh.vert", *m_asset_manager, gpu::gl::ShaderType::Vertex);
-    phong->compileFile("shaders/phong.frag", *m_asset_manager, gpu::gl::ShaderType::Fragment);
+    auto phong = std::make_shared<gfx::gl::GLShaderProgram>();
+    phong->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+    phong->compileFile("shaders/phong.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
     phong->link();
 
     m_programs.insert(std::make_pair("line", line));
@@ -84,7 +84,7 @@ Scene& Renderer::getScene() { return m_scene; }
 
 const Scene& Renderer::getScene() const { return m_scene; }
 
-const std::shared_ptr<gpu::gl::GLShaderProgram> Renderer::getProgram(const std::string& name) const {
+const std::shared_ptr<gfx::gl::GLShaderProgram> Renderer::getProgram(const std::string& name) const {
     auto it = m_programs.find(name);
     if (it != m_programs.end()) {
         return it->second;

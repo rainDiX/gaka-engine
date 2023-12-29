@@ -3,6 +3,8 @@
  */
 #pragma once
 
+#include <sail-c++/image.h>
+
 #include <expected>
 #include <filesystem>
 #include <string>
@@ -15,11 +17,12 @@ struct NotFoundError {};
 struct IOError {};
 
 using Error = std::variant<NotFoundError, IOError>;
-class AssetManager {
+class RessourceManager {
    public:
-    AssetManager(const char* root_dir);
+    RessourceManager(const char* root_dir);
     std::expected<std::string, Error> readString(const std::string& assetPath) const noexcept;
     std::expected<std::vector<char>, Error> readBinary(const std::string& assetPath) const noexcept;
+    std::expected<sail::image, Error> readImage(const std::string& assetPath) const noexcept;
 
    private:
     std::filesystem::path m_rootDir;

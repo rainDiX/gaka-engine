@@ -4,18 +4,12 @@
 
 #pragma once
 
-#include <string>
-#include <tuple>
 #include <GL/glew.h>
 
-struct VertexAttribute {
-    std::string name;
-    GLint size;
-    GLenum type_enum;
-    GLsizei stride;
-    GLvoid* offset;
-};
+#include <span>
+#include <tuple>
 
+namespace gk::gfx::gl {
 inline std::tuple<int, GLenum, size_t> componentsTypeSize(GLenum type_enum) {
     switch (type_enum) {
         case GL_FLOAT:
@@ -50,3 +44,26 @@ inline std::tuple<int, GLenum, size_t> componentsTypeSize(GLenum type_enum) {
             return std::make_tuple(0, 0, 0);
     }
 };
+
+template <typename T>
+inline size_t updateBuffer(GLuint handle, const std::span<const T>& buffer, size_t old_buf_size, GLenum target) {
+    glBindBuffer(target, handle);
+    if (old_buf_size != buffer.size()) {
+        glBufferData(target, buffer.size() * sizeof(T), buffer.data(), GL_STATIC_DRAW);
+    } else {
+        glBufferSubData(target, 0, buffer.size() * sizeof(T), buffer.data());
+    }
+    return buffer.size();
+}
+
+template <typename T>
+void setupVertexObjects(GLuint& vao, GLuint& vbo, const std::span<const T>& v) {
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    glGenBuffers(1, &vbo);
+    updateBuffer(vbo, v, 0, GL_ARRAY_BUFFER);
+}
+
+void setupElementObjects(GLuint& ebo, const std::span<const GLuint>& indices);
+
+}  // namespace gk::gfx::gl

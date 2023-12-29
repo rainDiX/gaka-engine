@@ -15,12 +15,12 @@
 #include <random>
 #include <vector>
 
-#include "GPU/OpenGL/GLShaderProgram.hpp"
+#include "GFX/OpenGL/GLShaderProgram.hpp"
 #include "GUI/SDLOpenGLWindow.hpp"
 #include "Geometry/Curves.hpp"
 #include "Geometry/Mesh.hpp"
 #include "Geometry/Surface.hpp"
-#include "IO/AssetManager.hpp"
+#include "IO/RessourceManager.hpp"
 #include "Rendering/Material.hpp"
 #include "Rendering/RenderObject.hpp"
 #include "Rendering/Renderer.hpp"
@@ -29,7 +29,7 @@
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
-void bezierDemo(std::shared_ptr<gk::gpu::gl::GLShaderProgram> program, gk::rendering::Scene& scene) {
+void bezierDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program, gk::rendering::Scene& scene) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -63,17 +63,17 @@ void bezierDemo(std::shared_ptr<gk::gpu::gl::GLShaderProgram> program, gk::rende
             gk::geometry::Vertex{ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
     }
 
-    auto curveObj = std::make_unique<gk::rendering::RenderObject>(curveMesh, program, std::vector<Texture>(), copper);
-    auto ctrlObj = std::make_unique<gk::rendering::RenderObject>(ctrlMesh, program, std::vector<Texture>(), copper);
+    auto curveObj = std::make_unique<gk::rendering::RenderObject>(curveMesh, program, std::vector<gk::gfx::gl::GLTexture>(), copper);
+    auto ctrlObj = std::make_unique<gk::rendering::RenderObject>(ctrlMesh, program, std::vector<gk::gfx::gl::GLTexture>(), copper);
 
-    curveObj->setDrawingMode(LINES);
-    ctrlObj->setDrawingMode(LINES);
+    curveObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
+    ctrlObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
 
     scene.addObject("control curve", std::move(ctrlObj));
     scene.addObject("bezier Curve", std::move(curveObj));
 }
 
-void surfaceDemo(std::shared_ptr<gk::gpu::gl::GLShaderProgram> program, gk::rendering::Scene& scene) {
+void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program, gk::rendering::Scene& scene) {
     std::random_device rd;
     std::mt19937 gen(rd());
     std::uniform_real_distribution<float> dis(0.0f, 1.0f);
@@ -94,7 +94,7 @@ void surfaceDemo(std::shared_ptr<gk::gpu::gl::GLShaderProgram> program, gk::rend
     copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
     copper->shininess = 0.1;
 
-    auto surfaceObj = std::make_unique<gk::rendering::RenderObject>(surface.mesh(), program, std::vector<Texture>(), copper);
+    auto surfaceObj = std::make_unique<gk::rendering::RenderObject>(surface.mesh(), program, std::vector<gk::gfx::gl::GLTexture>(), copper);
 
     scene.addObject("surface", std::move(surfaceObj));
 }
@@ -103,7 +103,7 @@ class Application {
    public:
     Application() {
         m_window = std::make_unique<gk::gui::SDLOpenGLWindow>("Gaka Demo", SCR_WIDTH, SCR_HEIGHT, false, true);
-        m_assetManager = std::make_shared<gk::io::AssetManager>("."); // TODO improve
+        m_assetManager = std::make_shared<gk::io::RessourceManager>("."); // TODO improve
         m_renderer = std::make_unique<gk::rendering::Renderer>(m_assetManager);
         m_renderer->resize(SCR_WIDTH, SCR_HEIGHT);
 
@@ -208,7 +208,7 @@ class Application {
 
    private:
     std::unique_ptr<gk::gui::SDLOpenGLWindow> m_window;
-    std::shared_ptr<gk::io::AssetManager> m_assetManager = nullptr;
+    std::shared_ptr<gk::io::RessourceManager> m_assetManager = nullptr;
     std::unique_ptr<gk::rendering::Renderer> m_renderer = nullptr;
 };
 
