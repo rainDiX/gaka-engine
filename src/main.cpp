@@ -219,8 +219,8 @@ class Application {
 
  private:
   std::unique_ptr<gk::gui::SDLOpenGLWindow> m_window;
-  std::shared_ptr<gk::io::RessourceManager> m_ressourceManager = nullptr;
-  std::unique_ptr<gk::rendering::Renderer> m_renderer = nullptr;
+  std::shared_ptr<gk::io::RessourceManager> m_ressourceManager;
+  std::unique_ptr<gk::rendering::Renderer> m_renderer;
 };
 
 int main() {

@@ -6,7 +6,7 @@
 #  libepoxy_LIBRARIE
 
 find_package(PkgConfig)
-pkg_check_modules(PC_LIBEPOXY QUIET libepoxy)
+pkg_check_modules(PC_LIBEPOXY QUIET epoxy)
 
 if (PC_LIBEPOXY_FOUND)
     set(libepoxy_DEFINITIONS ${PC_LIBEPOXY_CFLAGS_OTHER})

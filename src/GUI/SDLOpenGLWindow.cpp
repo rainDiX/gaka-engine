@@ -54,7 +54,7 @@ SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, int width, int height
     throw std::runtime_error("Failed to create SDL2 window");
   }
 
-  SDL_GLContext m_context = SDL_GL_CreateContext(m_window);
+  m_context = SDL_GL_CreateContext(m_window);
   if (m_context == NULL) {
     SDL_DestroyWindow(m_window);
     SDL_Quit();

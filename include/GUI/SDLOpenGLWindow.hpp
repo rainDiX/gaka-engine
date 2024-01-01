@@ -23,9 +23,7 @@ class SDLOpenGLWindow : public SDLWindow {
   int getMaxMultisampleSamples();
 
  private:
-  SDL_Window* m_window;
   SDL_GLContext m_context;
-  WindowState m_state;
 };
 
 }  // namespace gk::gui
