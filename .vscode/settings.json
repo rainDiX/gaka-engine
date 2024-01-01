@@ -1,0 +1,9 @@
+{
+    "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+    "cmake.configureSettings": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON",
+    },
+    "terminal.integrated.env.linux": {
+        "LSAN_OPTIONS":"suppressions=${workspaceFolder}/dev/san_suppr.txt"
+    }
+}

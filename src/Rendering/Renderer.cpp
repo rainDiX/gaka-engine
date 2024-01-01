@@ -27,30 +27,30 @@ Renderer::Renderer(std::shared_ptr<io::RessourceManager> assetManager)
 // temporary
 void Renderer::compileShaders() {
   auto line = std::make_shared<gfx::gl::GLShaderProgram>();
-  line->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
-  line->compileFile("shaders/line.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
+  line->compileFile("shaders/OpenGL/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+  line->compileFile("shaders/OpenGL/line.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
   line->link();
 
   auto normal = std::make_shared<gfx::gl::GLShaderProgram>();
-  normal->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
-  normal->compileFile("shaders/normals.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
+  normal->compileFile("shaders/OpenGL/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+  normal->compileFile("shaders/OpenGL/normals.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
   normal->link();
 
   auto parametric = std::make_shared<gfx::gl::GLShaderProgram>();
-  parametric->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
-  parametric->compileFile("shaders/parametric.frag", *m_ressourceManager,
+  parametric->compileFile("shaders/OpenGL/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+  parametric->compileFile("shaders/OpenGL/parametric.frag", *m_ressourceManager,
                           gfx::gl::ShaderType::FRAGMENT);
   parametric->link();
 
   auto lambertian = std::make_shared<gfx::gl::GLShaderProgram>();
-  lambertian->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
-  lambertian->compileFile("shaders/lambertian.frag", *m_ressourceManager,
+  lambertian->compileFile("shaders/OpenGL/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+  lambertian->compileFile("shaders/OpenGL/lambertian.frag", *m_ressourceManager,
                           gfx::gl::ShaderType::FRAGMENT);
   lambertian->link();
 
   auto phong = std::make_shared<gfx::gl::GLShaderProgram>();
-  phong->compileFile("shaders/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
-  phong->compileFile("shaders/phong.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
+  phong->compileFile("shaders/OpenGL/mesh.vert", *m_ressourceManager, gfx::gl::ShaderType::VERTEX);
+  phong->compileFile("shaders/OpenGL/phong.frag", *m_ressourceManager, gfx::gl::ShaderType::FRAGMENT);
   phong->link();
 
   m_programs.insert(std::make_pair("line", line));

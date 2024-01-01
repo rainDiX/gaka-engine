@@ -10,17 +10,21 @@ target_include_directories(gakaIO PRIVATE ${gaka_include_dir})
 target_include_directories(gakaGeometry PRIVATE ${gaka_include_dir})
 target_include_directories(gakaRendering PRIVATE ${gaka_include_dir})
 
+add_sanitizers(gakaIO gakaGeometry gakaRendering)
+
 add_library(gakaGFXOpenGL
     GFX/OpenGL/GLHelperFn.cpp
     GFX/OpenGL/GLShaderProgram.cpp
-        GFX/OpenGL/GLMesh.cpp
-        GFX/OpenGL/GLTexture.cpp)
-    add_library(gakaGUIOpenGL
-        GUI/SDLWindow.cpp
-        GUI/SDLOpenGLWindow.cpp
-    )
-    add_dependencies(gakaGFXOpenGL OpenGLShaders)
-    add_executable(gaka_gl main.cpp)
+    GFX/OpenGL/GLMesh.cpp
+    GFX/OpenGL/GLTexture.cpp)
+add_library(gakaGUIOpenGL
+    GUI/SDLWindow.cpp
+    GUI/SDLOpenGLWindow.cpp
+)
+add_dependencies(gakaGFXOpenGL OpenGLShaders)
+add_executable(gaka_gl main.cpp)
+
+add_sanitizers(gakaGFXOpenGL gaka_gl)
 
 target_include_directories(gakaGUIOpenGL PRIVATE ${gaka_include_dir})
 target_include_directories(gakaGFXOpenGL PRIVATE ${gaka_include_dir})

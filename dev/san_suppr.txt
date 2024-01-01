@@ -1,0 +1,6 @@
+# See https://github.com/libsdl-org/SDL/issues/2712
+leak:SDL_DBus_Init
+# Leaks with EGL_Display
+leak:SDL_EGL_LoadLibrary
+leak:display_handle_done
+leak:display_handle_global

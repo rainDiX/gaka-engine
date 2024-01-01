@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
-set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/externals/sanitizers-cmake/cmake" ${CMAKE_MODULE_PATH})
 
 project(gaka C CXX)
 
@@ -14,6 +15,15 @@ if (MSVC)
 else ()
   add_compile_options(-Wall -Wextra -Wpedantic -fno-char8_t)
 endif()
+
+# Enable Sanitizers for dev build
+if(CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
+  set(SANITIZE_ADDRESS ON)
+  set(SANITIZE_MEMORY OFF)
+  set(SANITIZE_THREAD OFF)
+  set(SANITIZE_UNDEFINED ON)
+endif()
+find_package(Sanitizers)
 
 find_package(SDL2 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
