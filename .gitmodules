@@ -4,3 +4,6 @@
 [submodule "externals/sanitizers-cmake"]
 	path = externals/sanitizers-cmake
 	url = git@github.com:arsenm/sanitizers-cmake.git
+[submodule "externals/Vulkan-Hpp"]
+	path = externals/Vulkan-Hpp
+	url = https://github.com/KhronosGroup/Vulkan-Hpp

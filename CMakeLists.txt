@@ -25,16 +25,25 @@ if(CMAKE_BUILD_TYPE MATCHES "Debug|RelWithDebInfo")
 endif()
 find_package(Sanitizers)
 
+option(GAKA_VULKAN "Build the Vulkan backend" ON)
+option(GAKA_BUILD_VULKAN_HPP "Build Vulkan-Hpp" ON)
+option(GAKA_OPENGL "Build the OpenGL backend" ON)
+
 find_package(SDL2 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(SailC++ CONFIG REQUIRED)
 find_package(assimp CONFIG REQUIRED)
 
-set(OpenGL_GL_PREFERENCE GLVND)
-find_package(OpenGL REQUIRED)
-find_package(libepoxy REQUIRED)
+if(GAKA_OPENGL)
+  set(OpenGL_GL_PREFERENCE GLVND)
+  find_package(OpenGL REQUIRED)
+  find_package(libepoxy REQUIRED)
+endif()
+
+if(GAKA_VULKAN)
+  find_package(Vulkan REQUIRED)
+endif()
 
 set(gaka_include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
-
 add_subdirectory(shaders)
 add_subdirectory(src)
