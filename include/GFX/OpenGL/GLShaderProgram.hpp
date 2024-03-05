@@ -6,7 +6,6 @@
 
 #include <epoxy/gl.h>
 
-#include <glm/glm.hpp>
 #include <span>
 #include <string>
 #include <vector>

@@ -12,6 +12,9 @@ target_include_directories(gakaRendering PRIVATE ${gaka_include_dir})
 
 add_sanitizers(gakaIO gakaGeometry gakaRendering)
 
+target_link_libraries(gakaIO PUBLIC SAIL::sail-c++)
+target_link_libraries(gakaGeometry glm::glm)
+
 add_library(gakaGFXOpenGL
     GFX/OpenGL/GLHelperFn.cpp
     GFX/OpenGL/GLShaderProgram.cpp

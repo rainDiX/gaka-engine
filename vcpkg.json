@@ -13,6 +13,7 @@
         "vulkan"
       ]
     },
-    "libepoxy"
+    "libepoxy",
+    "assimp"
   ]
 }

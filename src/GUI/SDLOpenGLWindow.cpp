@@ -9,12 +9,19 @@
 #include <iostream>
 
 #include "GUI/SDLWindow.hpp"
+#include "GUI/Window.hpp"
 
 namespace gk::gui {
 
-SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, int width, int height, bool fullscreen,
-                                 bool vsync) {
-  m_state = {width, height, fullscreen, vsync, false, 0, 0};
+SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, uint32_t width, uint32_t height,
+                                 bool fullscreen, gfx::VSyncMode vsync) {
+  m_state = {.width = width,
+             .height = height,
+             .fullscreen = fullscreen,
+             .vsync = vsync,
+             .mouseLocked = false,
+             .mouseX = 0,
+             .mouseY = 0};
   unsigned long flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE;
   if (fullscreen) flags |= SDL_WINDOW_FULLSCREEN_DESKTOP;
 
@@ -26,7 +33,8 @@ SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, int width, int height
   }
 
   // Enable v-sync (set 1 to enable, 0 to disable)
-  SDL_GL_SetSwapInterval(vsync ? SDL_TRUE : SDL_FALSE);
+  // TODO : investigate triple buffering in OpenGL
+  SDL_GL_SetSwapInterval(vsync == gfx::VSyncMode::eDoubleBuffering ? SDL_TRUE : SDL_FALSE);
 
   // Request at least 32-bit color
   SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);

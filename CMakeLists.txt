@@ -28,6 +28,7 @@ find_package(Sanitizers)
 find_package(SDL2 CONFIG REQUIRED)
 find_package(glm CONFIG REQUIRED)
 find_package(SailC++ CONFIG REQUIRED)
+find_package(assimp CONFIG REQUIRED)
 
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)

@@ -4,14 +4,18 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
+#include "GFX/Enums.hpp"
+
 namespace gk::gui {
+
 struct WindowState {
-  int width;
-  int height;
+  uint32_t width;
+  uint32_t height;
   bool fullscreen;
-  bool vsync;
+  gfx::VSyncMode vsync;
   bool mouseLocked;
   int mouseX;
   int mouseY;

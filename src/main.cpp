@@ -13,6 +13,7 @@
 #include <span>
 #include <vector>
 
+#include "GFX/Enums.hpp"
 #include "GFX/OpenGL/GLShaderProgram.hpp"
 #include "GFX/OpenGL/GLTexture.hpp"
 #include "GUI/SDLOpenGLWindow.hpp"
@@ -112,8 +113,8 @@ void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program, gk::rend
 class Application {
  public:
   Application() {
-    m_window =
-        std::make_unique<gk::gui::SDLOpenGLWindow>("Gaka Demo", SCR_WIDTH, SCR_HEIGHT, false, true);
+    m_window = std::make_unique<gk::gui::SDLOpenGLWindow>("Gaka Demo", SCR_WIDTH, SCR_HEIGHT, false,
+                                                          gk::gfx::VSyncMode::eDoubleBuffering);
     m_ressourceManager = std::make_shared<gk::io::RessourceManager>(".");  // TODO improve
     m_renderer = std::make_unique<gk::rendering::Renderer>(m_ressourceManager);
     m_renderer->resize(SCR_WIDTH, SCR_HEIGHT);
