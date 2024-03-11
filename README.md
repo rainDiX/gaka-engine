@@ -11,8 +11,8 @@ Build dependencies :
 
 Build Dependencies :
 - Required on system :
-    - For SDL2: libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libgles2-mesa-dev
-- Bundled via vcpkg (optional):
+    - libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libgles2-mesa-dev
+- Bundled via vcpkg (optional, can be installed on system if prefered):
     - SDL2
     - libepoxy (OpenGL Function Loader)
     - Sail (image loading)
