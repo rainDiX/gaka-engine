@@ -5,6 +5,7 @@
 #pragma once
 
 #include <SDL2/SDL.h>
+#include <SDL_joystick.h>
 
 #include "GUI/Window.hpp"
 
@@ -18,9 +19,11 @@ class SDLWindow : public Window {
   const std::string_view title() const override;
   void setTitle(const std::string& title) override;
   void update() override;
+  void checkJoystick();
 
  protected:
   SDL_Window* m_window = nullptr;
+  SDL_Joystick* m_joystick = nullptr;
   WindowState m_state;
 };
 

@@ -32,19 +32,19 @@ enum DrawingMode {
 
 enum BufferType { ARRAY = GL_ARRAY_BUFFER, ELEMENT = GL_ELEMENT_ARRAY_BUFFER };
 
-class GLMesh {
+class Mesh {
  public:
   template <typename V>
-  GLMesh(const std::span<const V>& vertices, const GLShaderProgram* program,
+  Mesh(const std::span<const V>& vertices, const ShaderProgram& program,
          DrawingMode drawingMode = TRIANGLES);
 
   template <typename V>
-  GLMesh(const std::span<const V>& vertices, const std::span<const uint>& indices,
-         const GLShaderProgram* program, DrawingMode drawingMode = TRIANGLES);
-  GLMesh() = delete;
-  GLMesh(const GLMesh&) = delete;
-  GLMesh& operator=(const GLMesh&) = delete;
-  ~GLMesh();
+  Mesh(const std::span<const V>& vertices, const std::span<const uint>& indices,
+         const ShaderProgram& program, DrawingMode drawingMode = TRIANGLES);
+  Mesh() = delete;
+  Mesh(const Mesh&) = delete;
+  Mesh& operator=(const Mesh&) = delete;
+  ~Mesh();
   void bind() const noexcept;
   void draw() const noexcept;
 
@@ -67,7 +67,7 @@ class GLMesh {
 };
 
 template <typename V>
-GLMesh::GLMesh(const std::span<const V>& vertices, const GLShaderProgram* program,
+Mesh::Mesh(const std::span<const V>& vertices, const ShaderProgram& program,
                DrawingMode drawingMode)
     : m_drawingMode(drawingMode) {
   m_bufferType = ARRAY;
@@ -75,13 +75,13 @@ GLMesh::GLMesh(const std::span<const V>& vertices, const GLShaderProgram* progra
   m_vbo = 0;
   m_ebo = 0;
   setupVertexObjects(m_vao, m_vbo, vertices);
-  program->enableVertexAttributes();
+  program.enableVertexAttributes();
   m_vertexBufferSize = vertices.size();
 }
 
 template <typename V>
-GLMesh::GLMesh(const std::span<const V>& vertices, const std::span<const uint>& indices,
-               const GLShaderProgram* program, DrawingMode drawingMode)
+Mesh::Mesh(const std::span<const V>& vertices, const std::span<const uint>& indices,
+               const ShaderProgram& program, DrawingMode drawingMode)
     : m_drawingMode(drawingMode) {
   m_bufferType = ELEMENT;
   m_vao = 0;
@@ -89,19 +89,19 @@ GLMesh::GLMesh(const std::span<const V>& vertices, const std::span<const uint>& 
   m_ebo = 0;
   setupVertexObjects(m_vao, m_vbo, vertices);
   setupElementObjects(m_ebo, indices);
-  program->enableVertexAttributes();
+  program.enableVertexAttributes();
 
   m_indexBufferSize = indices.size();
   m_vertexBufferSize = vertices.size();
 }
 
 template <typename V>
-void GLMesh::update(const std::span<const V>& vertices) noexcept {
+void Mesh::update(const std::span<const V>& vertices) noexcept {
   m_vertexBufferSize = updateBuffer(m_vbo, vertices, m_vertexBufferSize, GL_ARRAY_BUFFER);
 }
 
 template <typename V>
-void GLMesh::update(const std::span<const V>& vertices,
+void Mesh::update(const std::span<const V>& vertices,
                     const std::span<const uint>& indices) noexcept {
   m_vertexBufferSize = updateBuffer(m_vbo, vertices, m_vertexBufferSize, GL_ARRAY_BUFFER);
   m_indexBufferSize = updateBuffer(m_ebo, indices, m_indexBufferSize, GL_ELEMENT_ARRAY_BUFFER);

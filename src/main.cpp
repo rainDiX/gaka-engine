@@ -7,108 +7,22 @@
 #include <SDL2/SDL_keycode.h>
 #include <SDL2/SDL_mouse.h>
 
-#include <cstddef>
 #include <memory>
 #include <random>
 #include <span>
-#include <vector>
 
 #include "GFX/Enums.hpp"
-#include "GFX/OpenGL/GLShaderProgram.hpp"
-#include "GFX/OpenGL/GLTexture.hpp"
+#include "GFX/FlyingCamera.hpp"
+#include "GFX/Material.hpp"
+#include "GFX/MaterialParameters.hpp"
 #include "GUI/SDLOpenGLWindow.hpp"
-#include "Geometry/Curves.hpp"
-#include "Geometry/Mesh.hpp"
 #include "Geometry/Surface.hpp"
 #include "IO/RessourceManager.hpp"
-#include "Rendering/Material.hpp"
-#include "Rendering/RenderObject.hpp"
 #include "Rendering/Renderer.hpp"
 #include "Rendering/Scene.hpp"
 
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
-
-void bezierDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program,
-                gk::rendering::Scene& scene) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
-  auto bezier = gk::geometry::Bezier<4>(glm::vec3(0, 0, 0), glm::vec3(3, 0, 0), 100);
-
-  for (int i = 1; i < 3; ++i) {
-    bezier[i] = glm::vec3(i, 2 * dis(gen), 2 * dis(gen));
-  }
-
-  auto curveMesh = gk::geometry::Mesh{std::vector<gk::geometry::Vertex>(), bezier.indices()};
-
-  for (size_t i = 0; i < bezier.curve().size(); ++i) {
-    float u = float(i) / float(bezier.curve().size());
-    curveMesh.vertices.push_back(
-        gk::geometry::Vertex{bezier.curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(u, u)});
-  }
-
-  auto copper = std::make_shared<Material>();
-  copper->name = std::string("copper");
-  copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
-  copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
-  copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
-  copper->shininess = 0.1;
-
-  auto ctrlCurve = bezier.ctrlCurve();
-  auto ctrlMesh = gk::geometry::Mesh{std::vector<gk::geometry::Vertex>(), ctrlCurve->indices()};
-  for (size_t i = 0; i < ctrlCurve->curve().size(); ++i) {
-    float u = float(i) / float(bezier.curve().size());
-    ctrlMesh.vertices.push_back(gk::geometry::Vertex{
-        ctrlCurve->curve()[i], glm::vec3(0.0, 0.0, 0.0), glm::vec2(1.0 - u, 1.0 - u)});
-  }
-
-  auto curveObj = std::make_unique<gk::rendering::RenderObject>(curveMesh, program, copper);
-  auto ctrlObj = std::make_unique<gk::rendering::RenderObject>(ctrlMesh, program, copper);
-
-  curveObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
-  ctrlObj->mesh().setDrawingMode(gk::gfx::gl::LINES);
-
-  scene.addObject("control curve", std::move(ctrlObj));
-  scene.addObject("bezier Curve", std::move(curveObj));
-}
-
-void surfaceDemo(std::shared_ptr<gk::gfx::gl::GLShaderProgram> program, gk::rendering::Scene& scene,
-                 gk::io::RessourceManager& ressourceManager) {
-  std::random_device rd;
-  std::mt19937 gen(rd());
-  std::uniform_real_distribution<float> dis(0.0f, 1.0f);
-
-  auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
-  for (int i = 0; i < 4; ++i) {
-    for (int j = 0; j < 4; ++j) {
-      ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
-    }
-  }
-
-  auto surface = gk::geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 100);
-
-  auto copper = std::make_shared<Material>();
-  copper->name = std::string("copper");
-  copper->ambient = glm::vec3(0.19125, 0.0735, 0.0225);
-  copper->diffuse = glm::vec3(0.7038, 0.27048, 0.0828);
-  copper->specular = glm::vec3(0.256777, 0.137622, 0.086014);
-  copper->shininess = 0.1;
-
-  auto surfaceObj = std::make_unique<gk::rendering::RenderObject>(surface.mesh(), program, copper);
-
-  auto wallTex = ressourceManager.readImage("assets/wall.jpg");
-
-  if (wallTex) {
-    auto img = *wallTex;
-    auto texture = std::make_shared<gk::gfx::gl::GLTexture>(
-        std::span<std::byte>{static_cast<std::byte*>(img.pixels()), img.pixels_size()}, img.width(),
-        img.height());
-    surfaceObj->addTexture(texture);
-  }
-  scene.addObject("surface", std::move(surfaceObj));
-}
 
 class Application {
  public:
@@ -119,18 +33,7 @@ class Application {
     m_renderer = std::make_unique<gk::rendering::Renderer>(m_ressourceManager);
     m_renderer->resize(SCR_WIDTH, SCR_HEIGHT);
 
-    auto line = m_renderer->getProgram("line");
-    auto normal = m_renderer->getProgram("normal");
-    auto lambertian = m_renderer->getProgram("lambertian");
-    auto phong = m_renderer->getProgram("phong");
-
-    auto& scene = m_renderer->getScene();
-    // bezierDemo(line, scene);
-    surfaceDemo(lambertian, scene, *m_ressourceManager);
-
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
-    scene.addPointLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 10.0));
+    surfaceDemo();
   }
 
   ~Application() = default;
@@ -138,6 +41,7 @@ class Application {
   void processInput(bool& running) {
     SDL_Event event = {0};
     auto& state = m_window->state();
+    auto cameraNode = m_renderer->getScene().activeCamera();
 
     while (SDL_PollEvent(&event)) {
       switch (event.type) {
@@ -157,16 +61,24 @@ class Application {
               }
               break;
             case SDLK_LEFT:
-              m_renderer->getScene().camera().strafeBy(0.5);
+              if (cameraNode.has_value()) {
+                (*cameraNode)->camera().strafeBy(0.5);
+              }
               break;
             case SDLK_RIGHT:
-              m_renderer->getScene().camera().strafeBy(-0.5);
+              if (cameraNode.has_value()) {
+                (*cameraNode)->camera().strafeBy(-0.5);
+              }
               break;
             case SDLK_UP:
-              m_renderer->getScene().camera().moveUp(0.5);
+              if (cameraNode.has_value()) {
+                (*cameraNode)->camera().moveUp(0.5);
+              }
               break;
             case SDLK_DOWN:
-              m_renderer->getScene().camera().moveUp(-0.5);
+              if (cameraNode.has_value()) {
+                (*cameraNode)->camera().moveUp(-0.5);
+              }
               break;
           }
           break;
@@ -178,7 +90,9 @@ class Application {
           }
           break;
         case SDL_MOUSEWHEEL:
-          m_renderer->getScene().camera().moveBy(event.wheel.y * 0.5);
+          if (cameraNode.has_value()) {
+            (*cameraNode)->camera().moveBy(event.wheel.y * 0.5);
+          }
           break;
         case SDL_WINDOWEVENT:
           if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
@@ -199,9 +113,11 @@ class Application {
 
     // Handle mouse movement
     if (deltaX != 0 || deltaY != 0) {
-      auto& camera = m_renderer->getScene().camera();
-      camera.rotateRight(0.15 * deltaX);
-      camera.rotateUp(0.15 * deltaY);
+      if (cameraNode.has_value()) {
+        auto& camera = (*cameraNode)->camera();
+        camera.rotateRight(0.15 * deltaX);
+        camera.rotateUp(0.15 * deltaY);
+      }
     }
   }
 
@@ -219,6 +135,62 @@ class Application {
   }
 
  private:
+  void surfaceDemo() {
+    auto& scene = m_renderer->getScene();
+
+    // add camera
+    gk::gfx::FlyingCamera camera{glm::vec3(0.0f, 2.0f, 5.0f), glm::vec3(0.0f, 2.0f, 4.0f),
+                                 glm::vec3(0.0f, 1.0f, 0.0f)};
+
+    long cameraId = scene.addCamera(std::move(camera));
+
+    scene.setActiveCamera(cameraId);
+
+    auto material = gk::gfx::createPhongMaterial(*m_ressourceManager);
+    long materialtId = scene.addMaterial(std::move(material));
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0f, 1.0f);
+
+    auto ctrl_grid = std::array<glm::vec3, 4 * 4>();
+    for (int i = 0; i < 4; ++i) {
+      for (int j = 0; j < 4; ++j) {
+        ctrl_grid[i * 4 + j] = glm::vec3(i, 4 * dis(gen), j);
+      }
+    }
+    auto surface = gk::geometry::BezierSurface<4, 4>(std::move(ctrl_grid), 100);
+
+    auto copper = std::make_unique<gk::gfx::PhongMaterialParams>();
+
+    long copperId = scene.addMaterialParameter(std::move(copper));
+
+    auto surfaceId = scene.addMesh(surface.mesh(), materialtId);
+
+    if (surfaceId.has_value()) {
+      scene.connect(scene.rootId(), *surfaceId);
+      scene.connect(*surfaceId, materialtId);
+      scene.connect(*surfaceId, copperId);
+
+      auto wallTex = m_ressourceManager->readImage("assets/wall.jpg");
+
+      if (wallTex) {
+        auto img = *wallTex;
+        long texId = scene.addTexture(img.pixels, img.width, img.height);
+        scene.connect(*surfaceId, texId);
+      }
+    }
+    long light1 =
+        scene.addLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 0.0));
+    long light2 =
+        scene.addLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(10.0, 0.0, 0.0));
+    long light3 =
+        scene.addLight({glm::vec3(1.0, 1.0, 1.0), 1.0, 20.0, 5.0}, glm::vec3(0.0, 10.0, 10.0));
+    scene.connect(scene.rootId(), light1);
+    scene.connect(scene.rootId(), light2);
+    scene.connect(scene.rootId(), light3);
+  }
+
   std::unique_ptr<gk::gui::SDLOpenGLWindow> m_window;
   std::shared_ptr<gk::io::RessourceManager> m_ressourceManager;
   std::unique_ptr<gk::rendering::Renderer> m_renderer;

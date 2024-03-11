@@ -8,7 +8,7 @@
 #include <cstddef>
 
 namespace gk::gfx::gl {
-GLTexture::GLTexture(const std::span<const std::byte> data, GLsizei width, GLsizei height) {
+Texture::Texture(const std::span<const std::byte> data, GLsizei width, GLsizei height) {
   glGenTextures(1, &m_id);
   glBindTexture(GL_TEXTURE_2D, m_id);
   glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data.data());
@@ -19,9 +19,9 @@ GLTexture::GLTexture(const std::span<const std::byte> data, GLsizei width, GLsiz
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
 
-GLTexture::~GLTexture() { glDeleteTextures(1, &m_id); }
+Texture::~Texture() { glDeleteTextures(1, &m_id); }
 
-void GLTexture::bind() const noexcept {
+void Texture::bind() const noexcept {
   glActiveTexture(GL_TEXTURE0);
   glBindTexture(GL_TEXTURE_2D, m_id);
 }

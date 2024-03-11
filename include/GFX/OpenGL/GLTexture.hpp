@@ -15,13 +15,13 @@ enum GLTextureType {
   SPECULAR,
 };
 
-class GLTexture {
+class Texture {
  public:
-  GLTexture(const std::span<const std::byte> data, GLsizei width, GLsizei height);
-  GLTexture() = delete;
-  ~GLTexture();
-  GLTexture(const GLTexture&) = delete;
-  GLTexture& operator=(const GLTexture&) = delete;
+  Texture(const std::span<const std::byte> data, GLsizei width, GLsizei height);
+  Texture() = delete;
+  ~Texture();
+  Texture(const Texture&) = delete;
+  Texture& operator=(const Texture&) = delete;
   void bind() const noexcept;
 
  private:

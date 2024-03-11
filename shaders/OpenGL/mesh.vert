@@ -1,14 +1,13 @@
 #version 450 core
 
-in vec3 in_position;
-in vec3 in_normal;
-in vec2 in_uv;
+layout(location=0) in vec3 in_position;
+layout(location=1) in vec3 in_normal;
+layout(location=2) in vec2 in_uv;
 
-out vec3 position_world;
-out vec3 position_view;
-out vec3 position;
-out vec3 normal;
-out vec2 uv;
+layout(location=0) out vec3 position_world;
+layout(location=1) out vec3 position_view;
+layout(location=2) out vec3 normal;
+layout(location=3) out vec2 uv;
 
 uniform mat4 model;
 uniform mat4 view;

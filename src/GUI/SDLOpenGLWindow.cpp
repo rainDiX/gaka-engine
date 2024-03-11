@@ -27,10 +27,12 @@ SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, uint32_t width, uint3
 
   // SDL: initialize and configure
   // ------------------------------
-  if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+  if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK) != 0) {
     std::cerr << "failed to init SDL2: " << SDL_GetError() << '\n';
     throw std::runtime_error("Failed to init SDL2");
   }
+
+  checkJoystick();
 
   // Enable v-sync (set 1 to enable, 0 to disable)
   // TODO : investigate triple buffering in OpenGL
@@ -74,6 +76,8 @@ SDLOpenGLWindow::SDLOpenGLWindow(const std::string& title, uint32_t width, uint3
 SDLOpenGLWindow::~SDLOpenGLWindow() {
   SDL_GL_DeleteContext(m_context);
   SDL_DestroyWindow(m_window);
+  SDL_JoystickClose(m_joystick);
+  m_joystick = nullptr;
   SDL_Quit();
 }
 

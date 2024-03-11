@@ -9,7 +9,7 @@
 #include <string>
 
 namespace gk::gfx::gl {
-struct GLVertexAttribute {
+struct VertexAttribute {
   std::string name;
   GLint size;
   GLenum type_enum;

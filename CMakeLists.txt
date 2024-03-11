@@ -32,7 +32,7 @@ find_package(assimp CONFIG REQUIRED)
 
 set(OpenGL_GL_PREFERENCE GLVND)
 find_package(OpenGL REQUIRED)
-find_package(libepoxy REQUIRED)
+find_package(epoxy REQUIRED)
 
 set(gaka_include_dir "${CMAKE_CURRENT_SOURCE_DIR}/include")
 

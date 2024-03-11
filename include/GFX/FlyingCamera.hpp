@@ -4,9 +4,11 @@
 
 #pragma once
 
+#include <glm/fwd.hpp>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+namespace gk::gfx {
 class FlyingCamera {
  public:
   FlyingCamera(glm::vec3&& position, glm::vec3&& viewPoint, glm::vec3&& up);
@@ -20,10 +22,11 @@ class FlyingCamera {
   glm::mat4 getViewMatrix() const;
 
  private:
-  glm::vec3 m_position;
-  glm::vec3 m_viewPoint;
-  glm::vec3 m_up;
-  float m_fov;
+  glm::vec3 m_position{0.0};
+  glm::vec3 m_viewPoint{0.0};
+  glm::vec3 m_up{0.0};
+  float m_fov = 0;
   glm::vec3 getNormalizedViewVector() const;
   void rotateBy(float angle, glm::vec3&& axis);
 };
+}  // namespace gk::gfx

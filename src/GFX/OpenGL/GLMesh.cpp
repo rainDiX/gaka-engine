@@ -7,13 +7,13 @@
 
 namespace gk::gfx::gl {
 
-void GLMesh::bind() const noexcept {
+void Mesh::bind() const noexcept {
   if (m_vao > 0) {
     glBindVertexArray(m_vao);
   }
 }
 
-void GLMesh::draw() const noexcept {
+void Mesh::draw() const noexcept {
   if (m_bufferType == ELEMENT) {
     glDrawElements(m_drawingMode, m_indexBufferSize, GL_UNSIGNED_INT, nullptr);
   } else {
@@ -21,11 +21,11 @@ void GLMesh::draw() const noexcept {
   }
 }
 
-void GLMesh::setDrawingMode(const DrawingMode mode) noexcept { m_drawingMode = mode; }
+void Mesh::setDrawingMode(const DrawingMode mode) noexcept { m_drawingMode = mode; }
 
-DrawingMode GLMesh::drawingMode() const noexcept { return m_drawingMode; }
+DrawingMode Mesh::drawingMode() const noexcept { return m_drawingMode; }
 
-void GLMesh::setBufferType(const BufferType buftype) noexcept {
+void Mesh::setBufferType(const BufferType buftype) noexcept {
   if (buftype != m_bufferType) {
     m_bufferType = buftype;
     switch (m_bufferType) {
@@ -40,9 +40,9 @@ void GLMesh::setBufferType(const BufferType buftype) noexcept {
   }
 }
 
-BufferType GLMesh::bufferType() const noexcept { return m_bufferType; }
+BufferType Mesh::bufferType() const noexcept { return m_bufferType; }
 
-GLMesh::~GLMesh() {
+Mesh::~Mesh() {
   if (m_vbo > 0) {
     glDeleteBuffers(1, &m_vbo);
   }

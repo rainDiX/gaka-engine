@@ -1,5 +1,6 @@
-#include "Rendering/FlyingCamera.hpp"
+#include "GFX/FlyingCamera.hpp"
 
+namespace gk::gfx {
 FlyingCamera::FlyingCamera(glm::vec3&& position, glm::vec3&& viewPoint, glm::vec3&& up)
     : m_position{position}, m_viewPoint{viewPoint}, m_up{up}, m_fov{45.0f} {}
 
@@ -41,3 +42,5 @@ void FlyingCamera::rotateRight(float angle) { rotateBy(angle, glm::vec3(0.0f, 1.
 void FlyingCamera::rotateUp(float angle) { rotateBy(angle, glm::vec3(0.0f, 0.0f, 1.0f)); }
 
 glm::mat4 FlyingCamera::getViewMatrix() const { return glm::lookAt(m_position, m_viewPoint, m_up); }
+
+}  // namespace gfx

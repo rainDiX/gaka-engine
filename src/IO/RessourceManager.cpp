@@ -4,6 +4,8 @@
 
 #include "IO/RessourceManager.hpp"
 
+#include <sail-c++/image.h>
+
 #include <filesystem>
 #include <fstream>
 
@@ -54,7 +56,7 @@ std::expected<std::vector<char>, Error> RessourceManager::readBinary(
   return std::unexpected{IOError{}};
 }
 
-std::expected<sail::image, Error> RessourceManager::readImage(
+std::expected<Image, Error> RessourceManager::readImage(
     const std::string& assetPath) const noexcept {
   auto path = m_rootDir / assetPath;
   auto file = std::ifstream(path, std::ios::binary);
@@ -64,7 +66,9 @@ std::expected<sail::image, Error> RessourceManager::readImage(
   sail::image image(path);
 
   if (image.is_valid()) {
-    return image;
+    return Image{std::move(std::span<std::byte>{static_cast<std::byte*>(image.pixels()),
+                                                image.pixels_size()}),
+                 image.width(), image.height()};
   }
   return std::unexpected{IOError{}};
 }

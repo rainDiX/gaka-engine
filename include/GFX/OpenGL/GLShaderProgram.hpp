@@ -24,16 +24,16 @@ enum ShaderType {
   TESS_CONTROL = GL_TESS_CONTROL_SHADER,
 };
 
-class GLShaderProgram {
+class ShaderProgram {
  public:
-  GLShaderProgram();
-  ~GLShaderProgram();
-  GLShaderProgram(const GLShaderProgram&) = delete;
-  GLShaderProgram& operator=(const GLShaderProgram&) = delete;
+  ShaderProgram();
+  ~ShaderProgram();
+  ShaderProgram(const ShaderProgram&) = delete;
+  ShaderProgram& operator=(const ShaderProgram&) = delete;
   GLint id() const noexcept;
   bool isLinked() const noexcept;
   void use() const noexcept;
-  const std::span<const GLVertexAttribute> attributes() const noexcept;
+  const std::span<const VertexAttribute> attributes() const noexcept;
   void compileSource(const std::string& source, ShaderType type) const noexcept;
   void compileFile(const std::string& relativePath, io::RessourceManager& assetManager,
                    ShaderType type) const noexcept;
@@ -41,13 +41,13 @@ class GLShaderProgram {
   void enableVertexAttributes() const noexcept;
 
   template <typename T>
-  void setUniform(const std::string& name, const T value) const noexcept;
+  void setUniform(const std::string& name, const T& value) const noexcept;
 
  private:
   void updateAttributes() noexcept;
   GLuint m_id;
   bool m_linked = false;
-  std::vector<GLVertexAttribute> m_attributes;
+  std::vector<VertexAttribute> m_attributes;
 };
 
 }  // namespace gk::gfx::gl

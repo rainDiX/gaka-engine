@@ -1,11 +1,10 @@
 #version 450 core
 out vec4 color;
 
-in vec3 position_world;
-in vec3 position_view;
-in vec3 position;
-in vec3 normal;
-in vec2 uv;
+layout(location = 0) in vec3 position_world;
+layout(location = 1) in vec3 position_view;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec2 uv;
 
 struct Material {
     vec3 ambient;
@@ -13,6 +12,7 @@ struct Material {
     vec3 specular;
     float shininess;
 };
+
 struct PointLight {
     vec3 color;
     float intensity;
@@ -28,6 +28,7 @@ uniform mat4 model;
 uniform Material material;
 uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 
+uniform bool hasTex;
 uniform sampler2D tex;
 
 vec3 calculatePointLight(PointLight light) {
@@ -39,9 +40,9 @@ vec3 calculatePointLight(PointLight light) {
 
     vec3 view_dir = normalize(position_view - position_world);
 
-    if (light.range > 0.0 && distance > light.range) {
+    if(light.range > 0.0 && distance > light.range) {
         attenuation = 0.0;
-    } else if (light.decay > 0.0) {
+    } else if(light.decay > 0.0) {
         attenuation = 1.0 / (1.0 + light.decay * pow(distance / light.range, 2.0));
     }
 
@@ -51,14 +52,13 @@ vec3 calculatePointLight(PointLight light) {
     return (ambient + diffuse) * attenuation;
 }
 
-
 void main() {
     vec3 result = vec3(0.0);
 
-    for(int i = 0; i < nb_point_lights; i++)
-        result += calculatePointLight(pointLights[i]);
+    for(int i = 0; i < nb_point_lights; i++) result += calculatePointLight(pointLights[i]);
 
-    // TODO : support textures to avoid this quirk
-    color = vec4(result.x * uv.x, result.y*uv.y, result.z, 1.0);
-    color *= texture(tex, uv);
+    color = vec4(result, 1.0);
+    if(hasTex) {
+        color *= texture(tex, uv);
+    }
 }

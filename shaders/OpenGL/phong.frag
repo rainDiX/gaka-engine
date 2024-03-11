@@ -1,10 +1,10 @@
 #version 450 core
 out vec4 color;
 
-in vec3 position_world;
-in vec3 position_view;
-in vec3 normal;
-in vec2 uv;
+layout(location = 0) in vec3 position_world;
+layout(location = 1) in vec3 position_view;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec2 uv;
 
 struct Material {
     vec3 ambient;
@@ -12,8 +12,6 @@ struct Material {
     vec3 specular;
     float shininess;
 };
-
-uniform Material material;
 
 struct PointLight {
     vec3 color;
@@ -28,6 +26,10 @@ struct PointLight {
 uniform int nb_point_lights;
 uniform mat4 model;
 uniform PointLight pointLights[MAX_POINTS_LIGHTS];
+uniform Material material;
+
+uniform bool hasTex;
+uniform sampler2D tex;
 
 vec3 calculatePointLight(PointLight light) {
     vec3 light_dir = normalize(light.position - position_world);
@@ -56,6 +58,8 @@ void main() {
 
     for(int i = 0; i < nb_point_lights; i++) result += calculatePointLight(pointLights[i]);
 
-    // TODO : support textures to avoid this quirk
-    color = vec4(result.x * uv.x, result.y * uv.y, result.z, 1.0);
+    color = vec4(result, 1.0);
+    if(hasTex) {
+        color *= texture(tex, uv);
+    }
 }
