@@ -1,43 +1,51 @@
 # Gaka-cpp (画家)
 
-An OpenGL 4.3+ Renderer written in Modern C++
+An OpenGL 4.3+ Renderer (Vulkan WIP in another branch), written in C++23
 
-![Gaka rendering a Bezier surface in a SDL2 Window](/.readme/bezier_surface.png?raw=true "Gaka rendering a Bezier surface")
+![Legacy Gaka rendering a Bezier surface in a SDL2 Window](/.readme/bezier_surface.png?raw=true "Legacy Gaka rendering a Bezier surface")
 
 ## Build instructions
 Build dependencies :
-- Python3 and jinja2 module (for glad)
 - CMake
-- a C++17 compiler
+- a C++23 compiler
 
-Dependencies :
-- OpenGL 4.6
-- glm
-- SDL2
+Build Dependencies :
+- Required on system :
+    - For SDL2: libx11-dev libxft-dev libxext-dev libwayland-dev libxkbcommon-dev libegl1-mesa-dev libgles2-mesa-dev
+- Bundled via vcpkg (optional):
+    - SDL2
+    - libepoxy (OpenGL Function Loader)
+    - Sail (image loading)
+    - assimp (model loading)
 
+
+### VCPKG instructions
+Installing dependencies on Fedora:
 ```sh
-git clone --recurse-submodules git://gitlab.com/rainDX/gaka-cpp.git
-cd gaka-cpp
-mkdir build
-cmake -DCMAKE_BUILD_TYPE=Release -G Ninja -B build
-cmake --build build/
-# lauch it
-build/gaka
+dnf install libX11-devel libXrender-devel libXext-devel libXcuror-devel libxkbcommon-devel wayland-devel libglvnd-devel mesa-libGLU-devel mesa-libEGL-devel
+```
+Installing dependencies on Ubuntu:
+```sh
+apt install apt install libx11-dev libxft-dev libxext-dev libxkbcommon-dev libwayland-dev libglvnd-dev libgles2-mesa-dev libegl1-mesa-dev
 ```
 
-## TODO:
-- [ ] Bezier curves
-    - [x] From a given number of line segments
-    - [ ] From a given length of line segment
-    - [x] Visualization
-- [ ] Bezier surfaces
-    - [x] Lambertian reflectance
-    - [x] Surface normals visualization
-    - [ ] Parameter space
-- [ ] Real-time rendering
-    - [ ] BRDF Implementation
-    - [ ] Texture support
-    - [x] Three-point lighting
-- [ ] BONUS
-    - [ ] Interactive Bezier curve manipulation
-    - [ ] Skybox
+Building
+```sh
+git clone --recurse-submodules git://gitlab.com/rainDX/gaka-engine.git
+cd gaka-engine
+mkdir build
+cmake -G Ninja -B build -DCMAKE_TOOLCHAIN_FILE=dev/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build --parallel
+# lauch it
+build/src/gaka_gl
+```
+
+**Notes:** If needed, some CMake presets are provided in `CMakePresets.json`
+
+
+## Programming Guide
+- uses C++23
+- No C++ Modules
+- C++20's `char8_t` has been disabled
+- No exceptions (use std::expected instead)
+- Format style based on Google (see clang-format)
