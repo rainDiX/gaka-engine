@@ -1,0 +1,8 @@
+file(COPY "${CMAKE_CURRENT_BINARY_DIR}/../shaders" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+file(COPY "${CMAKE_CURRENT_LIST_DIR}/assets" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
+
+add_executable(bezier BezierSurface.cpp)
+add_sanitizers(bezier)
+target_include_directories(bezier PRIVATE ${gaka_include_dir})
+target_link_libraries(bezier PUBLIC gakaGUIOpenGL ${CMAKE_DL_LIBS})
