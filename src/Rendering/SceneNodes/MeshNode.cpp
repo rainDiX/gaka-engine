@@ -21,13 +21,14 @@ MeshNode::MeshNode(long id, const gk::geometry::Mesh& mesh, MaterialNode* materi
 }
 
 void MeshNode::draw(const glm::mat4& projection_matrix, const glm::mat4& view_matrix,
-                    const std::vector<LightNode*> lights) const {
+                    const glm::vec3& cameraPosition, const std::vector<LightNode*> lights) const {
   m_mesh->bind();
   auto& program = m_material->program();
   program.use();
   program.setUniform("projection", projection_matrix);
   program.setUniform("view", view_matrix);
   program.setUniform("model", m_modelMatrix);
+  program.setUniform("view_pos", cameraPosition);
 
   if (m_params) {
     auto parameters = m_params->parameters();

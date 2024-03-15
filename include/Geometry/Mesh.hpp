@@ -8,6 +8,7 @@
 #include <vector>
 
 namespace gk::geometry {
+
 struct Vertex {
   glm::vec3 position;
   glm::vec3 normal;
@@ -16,6 +17,6 @@ struct Vertex {
 
 struct Mesh {
   std::vector<Vertex> vertices;
-  std::vector<unsigned int> indices;
+  std::vector<unsigned> indices;
 };
 }  // namespace gk::geometry

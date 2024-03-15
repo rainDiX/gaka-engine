@@ -144,7 +144,7 @@ class MeshNode : public SceneNode {
   void disconnect(long id) noexcept override;
 
   void draw(const glm::mat4& projectionMatrix, const glm::mat4& viewMatrix,
-            const std::vector<LightNode*> lights) const;
+            const glm::vec3& cameraPosition, const std::vector<LightNode*> lights) const;
 
   void update(const gk::geometry::Mesh& mesh);
 

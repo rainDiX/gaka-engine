@@ -2,9 +2,8 @@
 out vec4 color;
 
 layout(location = 0) in vec3 position_world;
-layout(location = 1) in vec3 position_view;
-layout(location = 2) in vec3 normal;
-layout(location = 3) in vec2 uv;
+layout(location = 1) in vec3 normal;
+layout(location = 2) in vec2 uv;
 
 struct Material {
     vec3 ambient;
@@ -25,6 +24,7 @@ struct PointLight {
 
 uniform int nb_point_lights;
 uniform mat4 model;
+uniform vec3 view_pos;
 uniform Material material;
 uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 
@@ -38,7 +38,7 @@ vec3 calculatePointLight(PointLight light) {
 
     float attenuation = 1.0;
 
-    vec3 view_dir = normalize(position_view - position_world);
+    vec3 view_dir = normalize(view_pos - position_world);
 
     if(light.range > 0.0 && distance > light.range) {
         attenuation = 0.0;

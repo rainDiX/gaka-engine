@@ -26,7 +26,7 @@ class Renderer {
   const std::shared_ptr<gfx::gl::ShaderProgram> getProgram(const std::string& name) const;
 
  private:
-  void renderNode(SceneNode* node, const glm::mat4& projection, const gfx::FlyingCamera& camera,
+  void renderNode(SceneNode* node, const glm::mat4& projection, gfx::FlyingCamera& camera,
                   std::vector<LightNode*> lights = {}) const;
 
   Scene m_scene{};

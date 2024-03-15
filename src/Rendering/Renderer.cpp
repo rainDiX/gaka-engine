@@ -14,6 +14,8 @@ Renderer::Renderer(std::shared_ptr<io::RessourceManager> assetManager)
     : m_ressourceManager(assetManager) {
   std::cerr << "Loaded OpenGL " << glGetString(GL_VERSION) << std::endl;
 
+  glEnable(GL_DEPTH_TEST);
+  glDepthFunc(GL_LESS);
   glEnable(GL_MULTISAMPLE);
   glEnable(GL_LINE_SMOOTH);
   glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
@@ -34,7 +36,7 @@ std::vector<LightNode*> getLights(SceneNode* node) {
 }
 
 void Renderer::renderNode(SceneNode* node, const glm::mat4& projection,
-                          const gfx::FlyingCamera& camera, std::vector<LightNode*> lights) const {
+                          gfx::FlyingCamera& camera, std::vector<LightNode*> lights) const {
   switch (node->nodeType()) {
     case NodeType::eGeneric: {
       auto groupLights = getLights(node);
@@ -46,7 +48,7 @@ void Renderer::renderNode(SceneNode* node, const glm::mat4& projection,
     }
     case NodeType::eMesh: {
       auto mesh = dynamic_cast<MeshNode*>(node);
-      mesh->draw(projection, camera.getViewMatrix(), lights);
+      mesh->draw(projection, camera.getViewMatrix(), camera.position(), lights);
       break;
     }
     default:
@@ -60,7 +62,7 @@ void Renderer::renderScene() const {
 
   auto activeCam = m_scene.activeCamera();
   if (activeCam.has_value()) {
-    auto camera = (*activeCam)->camera();
+    auto& camera = (*activeCam)->camera();
     glm::mat4 projection =
         glm::perspective(glm::radians(camera.fov()), m_aspectRatio, 0.5f, 1000.0f);
     renderNode(m_scene.root(), projection, camera);

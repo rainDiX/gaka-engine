@@ -1,46 +1,69 @@
 #include "GFX/FlyingCamera.hpp"
 
 namespace gk::gfx {
-FlyingCamera::FlyingCamera(glm::vec3&& position, glm::vec3&& viewPoint, glm::vec3&& up)
-    : m_position{position}, m_viewPoint{viewPoint}, m_up{up}, m_fov{45.0f} {}
+FlyingCamera::FlyingCamera(const glm::vec3& position, const glm::vec3& up, float fov, float yaw,
+                           float pitch)
+    : m_position{position}, m_world_up{up}, m_up{up}, m_fov{fov}, m_yaw(yaw), m_pitch(pitch) {
+      updateCameraVectors();
+    }
 
 float FlyingCamera::fov() const { return m_fov; }
 
 void FlyingCamera::setFov(float fov) { m_fov = fov; }
 
 void FlyingCamera::moveBy(float distance) {
-  auto offset = getNormalizedViewVector() * distance;
+  auto offset = m_front * distance;
   m_position += offset;
-  m_viewPoint += offset;
+  m_needUpdate = true;
 }
 
 void FlyingCamera::moveUp(float distance) {
   auto offset = m_up * distance;
   m_position += offset;
-  m_viewPoint += offset;
+  m_needUpdate = true;
 }
 
 void FlyingCamera::strafeBy(float distance) {
-  auto strafeVector = glm::normalize(glm::cross(getNormalizedViewVector(), m_up)) * distance;
-
-  m_position += strafeVector;
-  m_viewPoint += strafeVector;
+  auto offset = m_right * distance;
+  m_position += offset;
+  m_needUpdate = true;
 }
 
-glm::vec3 FlyingCamera::getNormalizedViewVector() const {
-  return glm::normalize(m_viewPoint - m_position);
+inline void updateAngle(float& origin, float angle) {
+  origin += angle;
+  if (origin > 180.f) origin -= 360.f;
+  if (origin < -180.f) origin += 360.f;
 }
 
-void FlyingCamera::rotateBy(float angle, glm::vec3&& axis) {
-  auto rotationMatrix = glm::rotate(glm::mat4(1.0f), glm::radians(angle), axis);
-  auto rotatedViewVector = rotationMatrix * glm::vec4(getNormalizedViewVector(), 0.0f);
-  m_viewPoint = m_position + glm::vec3(rotatedViewVector);
+void FlyingCamera::yawMotion(float angle) {
+  updateAngle(m_yaw, angle);
+  m_needUpdate = true;
 }
 
-void FlyingCamera::rotateRight(float angle) { rotateBy(angle, glm::vec3(0.0f, 1.0f, 0.0f)); }
+void FlyingCamera::pitchMotion(float angle) {
+  updateAngle(m_pitch, angle);
+  m_needUpdate = true;
+};
 
-void FlyingCamera::rotateUp(float angle) { rotateBy(angle, glm::vec3(0.0f, 0.0f, 1.0f)); }
+const glm::mat4& FlyingCamera::getViewMatrix() {
+  if (m_needUpdate) {
+    updateCameraVectors();
+    m_viewMatrix = glm::lookAt(m_position, m_position + m_front, m_up);
+    m_needUpdate = false;
+  }
+  return m_viewMatrix;
+}
 
-glm::mat4 FlyingCamera::getViewMatrix() const { return glm::lookAt(m_position, m_viewPoint, m_up); }
+const glm::vec3& FlyingCamera::position() const { return m_position; }
 
-}  // namespace gfx
+void FlyingCamera::updateCameraVectors() {
+  glm::vec3 front;
+  front.x = cos(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+  front.y = sin(glm::radians(m_pitch));
+  front.z = sin(glm::radians(m_yaw)) * cos(glm::radians(m_pitch));
+  m_front = glm::normalize(front);
+  m_right = glm::normalize(glm::cross(m_front, m_world_up));
+  m_up = glm::normalize(glm::cross(m_right, m_front));
+}
+
+}  // namespace gk::gfx
