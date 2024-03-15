@@ -6,7 +6,6 @@
 
 #include <glm/glm.hpp>
 #include <memory>
-#include <optional>
 #include <span>
 #include <vector>
 
@@ -18,6 +17,7 @@
 #include "GFX/OpenGL/GLTexture.hpp"
 #include "GFX/PointLight.hpp"
 #include "Geometry/Mesh.hpp"
+#include "Animation/SkinnedMesh.hpp"
 
 namespace gk::rendering {
 
@@ -134,6 +134,7 @@ class TextureNode : public SceneNode {
 class MeshNode : public SceneNode {
  public:
   MeshNode(long id, const gk::geometry::Mesh& mesh, MaterialNode* material);
+  MeshNode(long id, const gk::animation::SkinnedMesh& mesh, MaterialNode* material);
 
   MeshNode(const MeshNode&) = delete;
 
@@ -150,7 +151,6 @@ class MeshNode : public SceneNode {
 
   NodeType nodeType() const override;
 
-  gfx::gl::Mesh& mesh() noexcept;
   std::vector<std::shared_ptr<gfx::gl::Texture>>& textures() noexcept;
 
   bool hasMaterial() const noexcept;
@@ -159,7 +159,6 @@ class MeshNode : public SceneNode {
   void translate(const glm::vec3& translation) noexcept;
   void rotate(float angle, const glm::vec3& axis) noexcept;
 
-  const gfx::gl::Mesh& mesh() const noexcept;
   const std::span<const std::shared_ptr<gfx::gl::Texture>> textures() const noexcept;
 
  private:

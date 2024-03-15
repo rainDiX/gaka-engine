@@ -16,8 +16,16 @@ namespace gk::rendering {
 MeshNode::MeshNode(long id, const gk::geometry::Mesh& mesh, MaterialNode* material)
     : SceneNode(id) {
   auto& program = material->program();
-  m_mesh = std::make_unique<gfx::gl::Mesh>(std::span<const geometry::Vertex>{mesh.vertices},
+  m_mesh = std::make_unique<gfx::gl::Mesh>(std::span<const geometry::Mesh::Vertex>{mesh.vertices},
                                            std::span<const uint>{mesh.indices}, program);
+}
+
+MeshNode::MeshNode(long id, const gk::animation::SkinnedMesh& mesh, MaterialNode* material)
+    : SceneNode(id) {
+  auto& program = material->program();
+  m_mesh = std::make_unique<gfx::gl::Mesh>(
+      std::span<const animation::SkinnedMesh::Vertex>{mesh.vertices},
+      std::span<const uint>{mesh.indices}, program);
 }
 
 void MeshNode::draw(const glm::mat4& projection_matrix, const glm::mat4& view_matrix,
@@ -135,9 +143,6 @@ bool MeshNode::hasMaterial() const noexcept { return m_material != nullptr; }
 bool MeshNode::hasTextures() const noexcept { return !m_textures.empty(); }
 
 NodeType MeshNode::nodeType() const { return NodeType::eMesh; }
-
-gfx::gl::Mesh& MeshNode::mesh() noexcept { return *m_mesh; }
-const gfx::gl::Mesh& MeshNode::mesh() const noexcept { return *m_mesh; }
 
 NodeType MaterialNode::nodeType() const { return NodeType::eMaterial; }
 

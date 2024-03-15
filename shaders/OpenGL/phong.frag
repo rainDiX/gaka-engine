@@ -46,9 +46,12 @@ vec3 calculatePointLight(PointLight light) {
         attenuation = 1.0 / (1.0 + light.decay * pow(distance / light.range, 2.0));
     }
 
+    float diff = max(dot(normal, light_dir), 0.0);
+    float spec = pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+
     vec3 ambient = material.ambient * light.color * light.intensity;
-    vec3 diffuse = material.diffuse * light.color * light.intensity * max(dot(normal, light_dir), 0.0);
-    vec3 specular = material.specular * light.color * light.intensity * pow(max(dot(view_dir, reflect_dir), 0.0), material.shininess);
+    vec3 diffuse = material.diffuse * light.color * light.intensity * diff;
+    vec3 specular = material.specular * light.color * light.intensity * spec;
 
     return (ambient + diffuse + specular) * attenuation;
 }

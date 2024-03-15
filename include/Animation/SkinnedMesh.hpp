@@ -7,15 +7,21 @@
 #include <glm/glm.hpp>
 #include <vector>
 
-namespace gk::geometry {
+namespace gk::animation {
 
-struct Mesh {
+
+struct SkinnedMesh {
+
   struct Vertex {
     glm::vec3 position;
     glm::vec3 normal;
     glm::vec2 uv;
+    int boneCount;
+    glm::ivec4 boneIdx;
+    glm::vec4 boneWeights;
   };
+
   std::vector<Vertex> vertices;
   std::vector<unsigned> indices;
 };
-}  // namespace gk::geometry
+}  // namespace gk::animation

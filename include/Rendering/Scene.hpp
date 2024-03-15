@@ -30,6 +30,7 @@ class Scene {
   long addMaterialParameter(std::unique_ptr<gfx::MaterialParameters>&& material);
   long addTexture(const std::span<std::byte> texture, int width, int height);
   std::optional<long> addMesh(const gk::geometry::Mesh& mesh, long materialId);
+  std::optional<long> addMesh(const gk::animation::SkinnedMesh& mesh, long materialId);
   void connect(long parentId, long childId);
 
  private:

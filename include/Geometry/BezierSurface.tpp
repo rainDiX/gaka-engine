@@ -17,7 +17,7 @@ template <size_t M, size_t N>
 gk::geometry::BezierSurface<M, N>::BezierSurface(const std::array<glm::vec3, M * N>&& ctrlGrid,
                                                  size_t edges)
     : m_ctrlGrid(ctrlGrid), m_meshEdges(edges) {
-  m_mesh = {std::vector<Vertex>(), std::vector<unsigned int>()};
+  m_mesh = {std::vector<Mesh::Vertex>(), std::vector<unsigned int>()};
   evaluate();
 }
 
@@ -47,7 +47,7 @@ void gk::geometry::BezierSurface<M, N>::evaluate() {
     for (size_t j = 0; j < m_meshEdges; ++j) {
       float u = float(j) / float(m_meshEdges - 1);
 
-      Vertex vertex;
+      Mesh::Vertex vertex;
       vertex.position = deCasteljau(u, q_points.cbegin() + i * M, q_points.cbegin() + (i + 1) * M);
       vertex.normal = glm::vec3(0.0, 0.0, 0.0);
       vertex.uv =

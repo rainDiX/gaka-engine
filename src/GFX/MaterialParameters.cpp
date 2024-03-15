@@ -3,6 +3,9 @@
  */
 
 #include "GFX/MaterialParameters.hpp"
+#include <glm/fwd.hpp>
+#include <string>
+#include <utility>
 
 namespace gk::gfx {
 
@@ -35,7 +38,7 @@ std::span<const std::pair<std::string, glm::mat3>> MockParameters::mat3Parameter
   return {};
 };
 
-std::span<const std::pair<std::string, glm::mat4>> MockParameters::mat4Parameters() const noexcept {
+std::vector<std::pair<std::string, glm::mat4>> MockParameters::mat4Parameters() const noexcept {
   return {};
 };
 
@@ -79,15 +82,18 @@ std::span<const std::pair<std::string, glm::vec3>> PhongMaterialParams::vec3Para
   return m_vecParams;
 }
 
-std::span<const std::pair<std::string, glm::vec4>> PhongMaterialParams::vec4Parameters() const noexcept {
+std::span<const std::pair<std::string, glm::vec4>> PhongMaterialParams::vec4Parameters()
+    const noexcept {
   return {};
 };
 
-std::span<const std::pair<std::string, glm::mat3>> PhongMaterialParams::mat3Parameters() const noexcept {
+std::span<const std::pair<std::string, glm::mat3>> PhongMaterialParams::mat3Parameters()
+    const noexcept {
   return {};
 };
 
-std::span<const std::pair<std::string, glm::mat4>> PhongMaterialParams::mat4Parameters() const noexcept {
+std::vector<std::pair<std::string, glm::mat4>> PhongMaterialParams::mat4Parameters()
+    const noexcept {
   return {};
 };
 
@@ -105,4 +111,30 @@ void PhongMaterialParams::setParameter(const std::string& key, const glm::float3
     m_shininessParam.second = value;
   }
 }
+
+PhongMaterialParamsAnimated::PhongMaterialParamsAnimated(
+    std::unique_ptr<animation::Skeleton>&& skeleton) {
+  m_skel = std::move(skeleton);
+  m_numBones = std::pair{"num_bones", m_skel->size()};
+  for (int i = 0; i < m_skel->size(); i++) {
+    m_bonesParams.push_back(std::pair{"bones[" + std::to_string(i) + "]", (*m_skel)[i].tr});
+  }
+}
+
+std::span<const std::pair<std::string, glm::int32>> PhongMaterialParamsAnimated::intParameters()
+    const noexcept {
+  return std::span{&m_numBones, 1};
+};
+
+animation::Skeleton& PhongMaterialParamsAnimated::skeleton() { return *m_skel; }
+
+std::vector<std::pair<std::string, glm::mat4>> PhongMaterialParamsAnimated::mat4Parameters()
+    const noexcept {
+  std::vector<std::pair<std::string, glm::mat4>> params = m_bonesParams;
+  for (int i = 0; i < m_skel->size(); i++) {
+    params[i].second = (*m_skel)[i].tr;
+  }
+  return params;
+}
+
 }  // namespace gk::gfx

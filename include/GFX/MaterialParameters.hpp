@@ -6,8 +6,11 @@
 
 #include <glm/fwd.hpp>
 #include <glm/glm.hpp>
+#include <memory>
 #include <span>
 #include <string>
+
+#include "Animation/Skeleton.hpp"
 
 namespace gk::gfx {
 class MaterialParameters {
@@ -37,7 +40,7 @@ class MaterialParameters {
   virtual std::span<const std::pair<std::string, glm::vec3>> vec3Parameters() const noexcept = 0;
   virtual std::span<const std::pair<std::string, glm::vec4>> vec4Parameters() const noexcept = 0;
   virtual std::span<const std::pair<std::string, glm::mat3>> mat3Parameters() const noexcept = 0;
-  virtual std::span<const std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept = 0;
+  virtual std::vector<std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept = 0;
 };
 
 class MockParameters : public MaterialParameters {
@@ -64,7 +67,7 @@ class MockParameters : public MaterialParameters {
   std::span<const std::pair<std::string, glm::vec3>> vec3Parameters() const noexcept override;
   std::span<const std::pair<std::string, glm::vec4>> vec4Parameters() const noexcept override;
   std::span<const std::pair<std::string, glm::mat3>> mat3Parameters() const noexcept override;
-  std::span<const std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept override;
+  std::vector<std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept override;
 };
 
 class PhongMaterialParams : public MaterialParameters {
@@ -89,11 +92,25 @@ class PhongMaterialParams : public MaterialParameters {
   std::span<const std::pair<std::string, glm::vec3>> vec3Parameters() const noexcept override;
   std::span<const std::pair<std::string, glm::vec4>> vec4Parameters() const noexcept override;
   std::span<const std::pair<std::string, glm::mat3>> mat3Parameters() const noexcept override;
-  std::span<const std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept override;
+  std::vector<std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept override;
 
  private:
   std::array<std::pair<std::string, glm::vec3>, 3> m_vecParams;
   std::pair<std::string, glm::float32> m_shininessParam;
+};
+
+class PhongMaterialParamsAnimated : public PhongMaterialParams {
+ public:
+  PhongMaterialParamsAnimated(std::unique_ptr<animation::Skeleton>&& skeleton);
+  std::vector<std::pair<std::string, glm::mat4>> mat4Parameters() const noexcept override;
+  std::span<const std::pair<std::string, glm::int32>> intParameters() const noexcept override;
+
+  animation::Skeleton& skeleton();
+
+ private:
+  std::unique_ptr<animation::Skeleton> m_skel;
+  std::pair<std::string, glm::int32> m_numBones;
+  std::vector<std::pair<std::string, glm::mat4>> m_bonesParams;
 };
 
 }  // namespace gk::gfx

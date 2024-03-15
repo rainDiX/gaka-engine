@@ -85,6 +85,19 @@ std::optional<long> Scene::addMesh(const gk::geometry::Mesh& mesh, long material
   return {};
 }
 
+std::optional<long> Scene::addMesh(const gk::animation::SkinnedMesh& mesh, long materialId) {
+  auto materialNode = getNode(materialId);
+  if (materialNode.has_value()) {
+    auto material = dynamic_cast<MaterialNode*>(*materialNode);
+    if (material) {
+      auto meshNode = std::make_unique<MeshNode>(m_counter, mesh, material);
+      m_nodes[m_counter] = std::move(meshNode);
+      return m_counter++;
+    }
+  }
+  return {};
+}
+
 void Scene::connect(long parentId, long childId) {
   auto parent = getNode(parentId);
   auto child = getNode(childId);

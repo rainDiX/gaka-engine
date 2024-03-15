@@ -1,5 +1,6 @@
 add_library(gakaIO IO/RessourceManager.cpp)
 add_library(gakaGeometry Geometry/Curves.cpp)
+add_library(gakaAnimation Animation/Skeleton.cpp)
 add_library(gakaRendering
     Rendering/Renderer.cpp
     Rendering/Scene.cpp
@@ -8,8 +9,10 @@ add_library(gakaRendering
     Rendering/SceneNodes/SceneNodes.cpp
     Rendering/SceneNodes/TextureNode.cpp)
 
+
 target_include_directories(gakaIO PRIVATE ${gaka_include_dir})
 target_include_directories(gakaGeometry PRIVATE ${gaka_include_dir})
+target_include_directories(gakaAnimation PRIVATE ${gaka_include_dir})
 target_include_directories(gakaRendering PRIVATE ${gaka_include_dir})
 
 add_sanitizers(gakaIO gakaGeometry gakaRendering)
@@ -45,9 +48,11 @@ target_link_libraries(gakaIO PUBLIC SAIL::sail-c++)
 
 target_link_libraries(gakaGeometry glm::glm)
 
+target_link_libraries(gakaAnimation glm::glm)
+
 target_link_libraries(gakaGFXOpenGL PUBLIC OpenGL::OpenGL epoxy::epoxy glm::glm)
 
 target_link_libraries(gakaGFX glm::glm gakaGFXOpenGL)
 
-target_link_libraries(gakaRendering PUBLIC gakaIO  gakaGeometry OpenGL::OpenGL glm::glm gakaGFX gakaGFXOpenGL)
+target_link_libraries(gakaRendering PUBLIC gakaIO  gakaGeometry gakaAnimation OpenGL::OpenGL glm::glm gakaGFX gakaGFXOpenGL)
 target_link_libraries(gakaGUIOpenGL PUBLIC SDL2::SDL2main SDL2::SDL2 OpenGL::OpenGL gakaRendering glm::glm)

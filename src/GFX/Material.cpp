@@ -35,13 +35,13 @@ Material createParametricMaterial(io::RessourceManager& ressourceManager) {
                         "shaders/OpenGL/parametric.frag");
 }
 
-Material createLambertianMaterial(io::RessourceManager& ressourceManager) {
-  return createMaterial(ressourceManager, "shaders/OpenGL/mesh.vert",
-                        "shaders/OpenGL/lambertian.frag");
-}
-
 Material createPhongMaterial(io::RessourceManager& ressourceManager) {
   return createMaterial(ressourceManager, "shaders/OpenGL/mesh.vert", "shaders/OpenGL/phong.frag");
 }
+
+Material createPhongMaterialAnimated(io::RessourceManager& ressourceManager) {
+  return createMaterial(ressourceManager, "shaders/OpenGL/meshLBS.vert", "shaders/OpenGL/phong.frag");
+}
+
 
 }  // namespace gk::gfx

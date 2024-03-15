@@ -32,7 +32,7 @@ inline Material createMaterial(io::RessourceManager& ressourceManager,
                                                 const std::string& fragmentShader);
 Material createNormalMaterial(io::RessourceManager&);
 Material createParametricMaterial(io::RessourceManager&);
-Material createLambertianMaterial(io::RessourceManager&);
 Material createPhongMaterial(io::RessourceManager&);
+Material createPhongMaterialAnimated(io::RessourceManager&);
 
 }  // namespace gk::gfx
