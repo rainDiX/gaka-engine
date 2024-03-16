@@ -12,6 +12,8 @@
 
 #include "Animation/Skeleton.hpp"
 
+// TODO: refactor this and add textures here
+
 namespace gk::gfx {
 class MaterialParameters {
  public:
@@ -111,6 +113,23 @@ class PhongMaterialParamsAnimated : public PhongMaterialParams {
   std::unique_ptr<animation::Skeleton> m_skel;
   std::pair<std::string, glm::int32> m_numBones;
   std::vector<std::pair<std::string, glm::mat4>> m_bonesParams;
+};
+
+
+class MetallicRoughnessMaterialParams : public MockParameters {
+ public:
+  MetallicRoughnessMaterialParams();
+  MetallicRoughnessMaterialParams(const glm::vec4& baseColorFactor, float roughnessFactor, float metallicFactor);
+
+  void setParameter(const std::string&, glm::float32) noexcept override;
+  void setParameter(const std::string&, const glm::vec4) noexcept override;
+
+  std::span<const std::pair<std::string, glm::float32>> floatParameters() const noexcept override;
+  std::span<const std::pair<std::string, glm::vec4>> vec4Parameters() const noexcept override;
+
+ private:
+  std::pair<std::string, glm::vec4> m_baseColorFactor;
+  std::array<std::pair<std::string, glm::float32>, 2> m_floatParams;
 };
 
 }  // namespace gk::gfx

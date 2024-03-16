@@ -11,3 +11,9 @@ add_executable(anim Animation.cpp)
 add_sanitizers(anim)
 target_include_directories(anim PRIVATE ${gaka_include_dir})
 target_link_libraries(anim PUBLIC gakaGUIOpenGL ${CMAKE_DL_LIBS})
+
+
+add_executable(pbrDemo pbrDemo.cpp)
+add_sanitizers(pbrDemo)
+target_include_directories(pbrDemo PRIVATE ${gaka_include_dir})
+target_link_libraries(pbrDemo PUBLIC gakaGUIOpenGL ${CMAKE_DL_LIBS})

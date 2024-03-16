@@ -34,5 +34,6 @@ Material createNormalMaterial(io::RessourceManager&);
 Material createParametricMaterial(io::RessourceManager&);
 Material createPhongMaterial(io::RessourceManager&);
 Material createPhongMaterialAnimated(io::RessourceManager&);
+Material createMetallicRoughnessMaterial(io::RessourceManager& ressourceManager);
 
 }  // namespace gk::gfx

@@ -3,6 +3,7 @@
  */
 
 #include "GFX/MaterialParameters.hpp"
+
 #include <glm/fwd.hpp>
 #include <string>
 #include <utility>
@@ -136,5 +137,39 @@ std::vector<std::pair<std::string, glm::mat4>> PhongMaterialParamsAnimated::mat4
   }
   return params;
 }
+
+MetallicRoughnessMaterialParams::MetallicRoughnessMaterialParams(const glm::vec4& baseColorFactor,
+                                                                 float roughnessFactor,
+                                                                 float metallicFactor) {
+  m_baseColorFactor = std::pair{"baseColorFactor", baseColorFactor};
+  m_floatParams[0] = std::pair{"roughnessFactor", roughnessFactor};
+  m_floatParams[1] = std::pair{"metallicFactor", metallicFactor};
+}
+
+void MetallicRoughnessMaterialParams::setParameter(const std::string& key,
+                                                   glm::float32 value) noexcept {
+  if (key == "roughnessFactor") {
+    m_floatParams[0].second = value;
+  } else if (key == "metallicFactor") {
+    m_floatParams[1].second = value;
+  }
+}
+
+void MetallicRoughnessMaterialParams::setParameter(const std::string& key,
+                                                   const glm::vec4 value) noexcept {
+  if (key == "baseColorFactor") {
+    m_baseColorFactor.second = value;
+  }
+}
+
+std::span<const std::pair<std::string, glm::float32>>
+MetallicRoughnessMaterialParams::floatParameters() const noexcept {
+  return m_floatParams;
+};
+
+std::span<const std::pair<std::string, glm::vec4>> MetallicRoughnessMaterialParams::vec4Parameters()
+    const noexcept {
+  return std::span{&m_baseColorFactor, 1};
+};
 
 }  // namespace gk::gfx

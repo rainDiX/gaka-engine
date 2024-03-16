@@ -23,7 +23,6 @@ struct PointLight {
 #define MAX_POINTS_LIGHTS 10
 
 uniform int nb_point_lights;
-uniform mat4 model;
 uniform vec3 view_pos;
 uniform PointLight pointLights[MAX_POINTS_LIGHTS];
 uniform Material material;
